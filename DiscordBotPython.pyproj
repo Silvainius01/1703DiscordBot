@@ -5,13 +5,15 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ee2c16a3-8338-47a3-8a11-44fc63eab7de}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>WhalerBot.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>Global|PythonCore|3.5</InterpreterId>
+    <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -22,11 +24,24 @@
     <InterpreterReference Include="Global|PythonCore|3.5" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollidaBot.py" />
-    <Compile Include="Calender.py" />
-    <Compile Include="CommandValidation.py" />
-    <Compile Include="WhalerBot.py" />
-    <Compile Include="TestBot.py" />
+    <Compile Include="src\Calender.py" />
+    <Compile Include="src\PsWorldEvents.py" />
+    <Compile Include="src\PsPlayerEvents.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\CommandValidation.py" />
+    <Compile Include="src\PsEventManager.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\WhalerBot.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="data.json">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>
