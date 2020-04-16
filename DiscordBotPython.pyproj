@@ -33,11 +33,22 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\EventManagment\" />
+    <Folder Include="src\testdata\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="data.json">
+    <Content Include="src\testdata\Death.json">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\testdata\AchievementEarned.json" />
+    <Content Include="src\testdata\BattleRankUp.json" />
+    <Content Include="src\testdata\GainExperience.json" />
+    <Content Include="src\testdata\ItemAdded.json" />
+    <Content Include="src\testdata\PlayerFacilityCapture.json" />
+    <Content Include="src\testdata\PlayerFacilityDefend.json" />
+    <Content Include="src\testdata\PlayerLogin.json" />
+    <Content Include="src\testdata\PlayerLogout.json" />
+    <Content Include="src\testdata\SkillAdded.json" />
+    <Content Include="src\testdata\VehicleDestroy.json" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
