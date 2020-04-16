@@ -1,3 +1,4 @@
+
 class ContinentLockEvent:
     i = 0
 

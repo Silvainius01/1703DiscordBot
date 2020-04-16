@@ -25,18 +25,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Calender.py" />
-    <Compile Include="src\PsWorldEvents.py" />
-    <Compile Include="src\PsPlayerEvents.py">
+    <Compile Include="src\EventManagment\CharacterData.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\EventManagment\PsWorldEvents.py" />
+    <Compile Include="src\EventManagment\PsPlayerEvents.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\CommandValidation.py" />
-    <Compile Include="src\PsEventManager.py">
+    <Compile Include="src\EventManagment\PsEventManager.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\WhalerBot.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\EventManagment\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="data.json">

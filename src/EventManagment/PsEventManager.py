@@ -1,3 +1,5 @@
+import json
+from collections import namedtuple
 
 class BasePsEvent:
     payload = ""
@@ -7,5 +9,5 @@ class BasePsEvent:
 class EventManagerPS2:
     i = 0
     
-    def AddEvent(event :BasePsEvent):
-        return null
+    def BaseEventDecoder(eventDict):
+       return namedtuple('BasePsEvent', eventDict.keys())(*eventDict.values)
