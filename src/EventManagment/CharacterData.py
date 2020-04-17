@@ -1,4 +1,3 @@
-from PsPlayerEvents import *
 
 class ExpAggregate:
     expName = "none"
@@ -40,14 +39,21 @@ class CharacterData:
         self.expDict["7"] = ExpAggregate("revive")
         return
 
-    def AddExpTick(self, event:ExperienceGainEvent):
-        if not event.experience_id in self.expDict:
-            self.expDict[event.experience_id] = ExpAggregate(event.experience_id)
-        self.expDict[event.experience_id].AddTick(event.amount)
+    def AddExpTick(self, event):
+        expId = event.get("experience_id");
+        if expId == None:
+            return
+
+        if not expId in self.expDict:
+            self.expDict[expId] = ExpAggregate(event.experience_id)
+        self.expDict[expId].AddTick(event.amount)
 
     def AddEvent(self, event):
-        if event.event_name == "GainExperience":
+        eventName = event.get("event_name")
+        if eventName == None:
+            return
+        if eventName == "GainExperience":
             self.AddExpTick(event)
-        if event.event_name in self.eventTypeDict:
-            self.eventTypeDict[event.event_name].append(event)
+        if eventName in self.eventTypeDict:
+            self.eventTypeDict[eventName].append(event)
         else: print("Attemtped to add untracked event type: " + event.event_name)

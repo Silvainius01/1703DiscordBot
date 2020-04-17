@@ -2,7 +2,6 @@ import json
 import sys
 from collections import namedtuple
 from CharacterData import *
-   
 
 class EventManagerPS2:
     eventFuncDict = {
@@ -18,20 +17,16 @@ class EventManagerPS2:
         return
 
     def ReceiveEvent(json: str):
-        baseEvent = json.loads(json, object_hook=BaseEventDecoder)
-        realEvent = EventDecoder(baseEvent.payload)
-        eventTypeDict[realEvent.event_name].append(realEvent)
+        eventPayload = json.loads(json).get("payload")
+        if "character_id" in  eventPayload:
+            EventManagerPS2.AddEventToCharacter(payload)
+        else:
+            eventTypeDict[eventPayload.get("event_name")].append(realEvent)
         return
 
-    def BaseEventDecoder(eventDict):
-       return namedtuple('BasePsEvent', eventDict.keys())(*eventDict.values)
-
-    def EventDecoder(payload):
-        name = payload.event_name + "Event"
-        return namedtuple(name, payload.keys())(*payload.values())
-
     def AddEventToCharacter(event):
-        if not event.character_id in characterDict:
-            characterDict[event.character_id] = CharacterData(event.character_id)
-        characterDict[event.character_id].AddEvent(event)
+        charId = event["character_id"]
+        if not charId in characterDict:
+            characterDict[charId] = CharacterData(charId)
+        characterDict[charId].AddEvent(event)
         return

@@ -37,6 +37,7 @@
     <Folder Include="src\" />
     <Folder Include="src\EventManagment\" />
     <Folder Include="src\testdata\" />
+    <Folder Include="src\testdata\outfit\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="src\testdata\Death.json">
@@ -46,6 +47,7 @@
     <Content Include="src\testdata\BattleRankUp.json" />
     <Content Include="src\testdata\GainExperience.json" />
     <Content Include="src\testdata\ItemAdded.json" />
+    <Content Include="src\testdata\outfit\1703_members.json" />
     <Content Include="src\testdata\PlayerFacilityCapture.json" />
     <Content Include="src\testdata\PlayerFacilityDefend.json" />
     <Content Include="src\testdata\PlayerLogin.json" />

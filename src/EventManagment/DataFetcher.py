@@ -33,7 +33,7 @@ class DataFetcher:
             memberList = []
             members = response.get("outfitData").get("members")
             for member in members:
-                memberList.append([member["name"]["first"], member["character_id"]])
+                memberList.append({ "name": member["name"]["first"], "id" : member["character_id"] })
             if(saveToDisk):
                 path = os.path.dirname(os.path.abspath(__file__)) + "\\..\\testdata\\outfit"
                 saveDataToDisk(memberList, path, outfitTag+"_members.json")
