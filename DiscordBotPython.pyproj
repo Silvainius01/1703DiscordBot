@@ -5,14 +5,15 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ee2c16a3-8338-47a3-8a11-44fc63eab7de}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>src\WhalerBot.py</StartupFile>
+    <StartupFile>src\EventManagment\DataFetcher.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>Global|PythonCore|3.8-32</InterpreterId>
     <TestFramework>Pytest</TestFramework>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -28,9 +29,11 @@
     <Compile Include="src\EventManagment\PsEventManager.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="src\EventManagment\DataFetcher.py" />
     <Compile Include="src\WhalerBot.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="packages\" />
     <Folder Include="src\" />
     <Folder Include="src\EventManagment\" />
     <Folder Include="src\testdata\" />
@@ -51,15 +54,7 @@
     <Content Include="src\testdata\VehicleDestroy.json" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="env\">
-      <Id>env</Id>
-      <Version>3.8</Version>
-      <Description>env (Python 3.8 (32-bit))</Description>
-      <InterpreterPath>Scripts\python.exe</InterpreterPath>
-      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
-      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
-      <Architecture>X86</Architecture>
-    </Interpreter>
+    <InterpreterReference Include="Global|PythonCore|3.8-32" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

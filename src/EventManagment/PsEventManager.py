@@ -17,10 +17,6 @@ class EventManagerPS2:
     def __init__(self):
         return
 
-    def ReceiveEvents(json:str):
-
-        return
-
     def ReceiveEvent(json: str):
         baseEvent = json.loads(json, object_hook=BaseEventDecoder)
         realEvent = EventDecoder(baseEvent.payload)
