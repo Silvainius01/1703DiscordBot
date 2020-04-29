@@ -9,7 +9,7 @@ class ExpAggregate:
         self.expTotal = 0
         self.expCount = 0
         # create entry for any unknown XP types (fucking Jeff and getting a 395)
-        if not experienceDict.get(expId):
+        if not ExpAggregate.experienceDict.get(expId):
             ExpAggregate.experienceDict[expId] = { 
                 "experience_id": "{0}".format(expId),
                 "description":"Unknown Exp Type {0}".format(expId),
@@ -49,7 +49,7 @@ class CharacterData:
         expAmt = int(event["amount"])
         self.expTotal += expAmt
         self.expDict[expId].AddTick(expAmt)
-        print("{0} gained {1}xp from {2}".format(self.charName,event["amount"],ExpAggregate.experienceDict[expId].get("description", "Unknown Experience Type "+ expId))
+        print("{0} gained {1}xp from {2}".format(self.charName,event["amount"],ExpAggregate.experienceDict[expId].get("description", "Unknown Experience Type "+ expId)))
         return
 
     def AddEvent(self, event):
@@ -68,9 +68,10 @@ class CharacterData:
 
     def ToString(self, mode:int):
         switch = {
-            0: 0
+            0: self.__FullReport__,
+            1: self.__KillReport__
         }
-        return
+        return switch[mode]()
 
     def __FullReport__(self):
         retval = ["{0} earned {1} score from following sources: ".format(self.charName, self.expTotal)]

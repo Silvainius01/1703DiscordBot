@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ee2c16a3-8338-47a3-8a11-44fc63eab7de}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>src\PsEventManager.py</StartupFile>
+    <StartupFile>src\OpsTracker.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -26,6 +26,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\CommandValidation.py" />
+    <Compile Include="src\OpsTracker.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="src\PsEventManager.py">
       <SubType>Code</SubType>
     </Compile>

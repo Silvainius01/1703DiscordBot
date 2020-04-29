@@ -50,14 +50,15 @@ class DataFetcher:
             return response
             
     def fetchCharacterId(characterId:str, saveToDisk:bool):
-        url = "http://census.daybreakgames.com/s:17034223270/get/ps2:v2/character/?character_id="+characterId
+        url = baseRequestUrl + "/character/?character_id=" + characterId
         response = requests.get(url)
         try:
             if(response.status_code == 200):
                 response_text = response.text
                 charData = json.loads(response_text)
                 if(saveToDisk):
-                    saveDataToDisk(outfitData, saveDirectoryPlayer, characterId+".json")
+                    charName = charData.get("character_list")[0].get("name").get("first")
+                    saveDataToDisk(outfitData, saveDirectoryPlayer, "{0}_{1}.json".format(charName, characterId))
                 return {"status": True, "charData": charData.get("character_list")[0] }
             else:
                 raise Exception("Bad status code from request!")
@@ -65,6 +66,23 @@ class DataFetcher:
             return {"status": False, "print": True, "exception": exc}
         return {"status":False}
 
+    def fetchCharacterName(characterName:str, saveToDisk:bool):
+        url = baseRequestUrl + "/character/?name.first=" + characterName
+        response = requests.get(url)
+        try:
+            if(response.status_code == 200):
+                response_text = response.text
+                charData = json.loads(response_text)
+                if(saveToDisk):
+                    charId = charData.get("character_list")[0].get("character_id")
+                    saveDataToDisk(charData, saveDirectoryPlayer, "{0}_{1}.json".format(characterName, charId))
+                return {"status": True, "charData": charData.get("character_list")[0] }
+            else:
+                raise Exception("Bad status code from request!")
+        except Exception as exc:
+            return {"status": False, "print": True, "exception": exc}
+        return {"status":False}
+    
     def fetchExperienceDataList(saveToDisk:bool):
         url = baseRequestUrl+"/experience?c:limit=999999"
         response = requests.get(url)
@@ -90,3 +108,4 @@ class DataFetcher:
        for expType in expList:
            expDict[expType.get("experience_id")] = expType
        return expDict
+

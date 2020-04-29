@@ -97,9 +97,10 @@ class EventManagerPS2:
             Tells the Manager to keep a look out for events from these characters.
         """
         if self.IsTrackedCharacter(characterId):
-            return
+            return False
         self.targetChars[characterId] = characterName
         print("Added target character " + characterName + " with id " + characterId)
+        return True
 
     def StartTrackingCharacter(self, characterId:str):
         """
@@ -146,6 +147,5 @@ if __name__ == "__main__":
     manager.AddTargetCharacter("5428977504197397649", "TaterKnight")
 
     # init websocket
-    websocket_listener = PS2_WebSocket_Listener("wss://push.planetside2.com/streaming?environment=ps2&service-id=s:17034223270")
-    websocket_listener.addCallback(manager.ReceiveEvent)
-    asyncio.get_event_loop().run_until_complete(websocket_listener.socketConnect(manager.targetChars.keys()))
+    websocket_listener = PS2_WebSocket_Listener([manager.ReceiveEvent])
+    websocket_listener.startListener(manager.targetChars.keys())
