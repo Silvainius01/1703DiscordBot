@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ee2c16a3-8338-47a3-8a11-44fc63eab7de}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>src\EventManagment\DataFetcher.py</StartupFile>
+    <StartupFile>src\PsEventManager.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,20 +22,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\Calender.py" />
-    <Compile Include="src\EventManagment\CharacterData.py">
+    <Compile Include="src\CharacterData.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\CommandValidation.py" />
-    <Compile Include="src\EventManagment\PsEventManager.py">
+    <Compile Include="src\PsEventManager.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="src\EventManagment\DataFetcher.py" />
+    <Compile Include="src\DataFetcher.py" />
+    <Compile Include="src\web_sock.py" />
     <Compile Include="src\WhalerBot.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="packages\" />
     <Folder Include="src\" />
-    <Folder Include="src\EventManagment\" />
     <Folder Include="src\testdata\" />
     <Folder Include="src\testdata\outfit\" />
   </ItemGroup>
@@ -53,6 +53,7 @@
     <Content Include="src\testdata\PlayerLogin.json" />
     <Content Include="src\testdata\PlayerLogout.json" />
     <Content Include="src\testdata\SkillAdded.json" />
+    <Content Include="src\testdata\ExpTypes.json" />
     <Content Include="src\testdata\VehicleDestroy.json" />
   </ItemGroup>
   <ItemGroup>
