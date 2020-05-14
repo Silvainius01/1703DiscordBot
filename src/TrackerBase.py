@@ -29,16 +29,20 @@ class ExpAggregate:
         str = "{0} score from {2} counts of {1}".format(self.expTotal, self.GetDescription(), self.expCount)
         return
 
-class CharacterData:
-    def __init__(self, id:str, name:str):
-        self.charId = id
-        self.charName = name
+class TrackedDataBase:
+    def __init__(self, id:str, data:dict):
         self.expDict = {}
         self.eventTypeDict = {}
         self.expTotal = 0
+        self.id = id
+        self.data = data
+        self.name = self.__SetName__()
         return
 
-    def AddExpTick(self, event):
+    def __SetName__(self):
+        return "No Name Given ({0})".format(self.id)
+
+    def __AddExpTick__(self, event):
         expId = event.get("experience_id");
 
         if expId == None:
@@ -49,7 +53,7 @@ class CharacterData:
         expAmt = int(event["amount"])
         self.expTotal += expAmt
         self.expDict[expId].AddTick(expAmt)
-        print("{0} gained {1}xp from {2}".format(self.charName,event["amount"],ExpAggregate.experienceDict[expId].get("description", "Unknown Experience Type "+ expId)))
+        self.__ExperienceGainCallback__(event)
         return
 
     def AddEvent(self, event):
@@ -57,13 +61,13 @@ class CharacterData:
         if eventName == None:
             return
         if eventName == "GainExperience":
-            self.AddExpTick(event)
+            self.__AddExpTick__(event)
             return
         elif eventName in self.eventTypeDict:
             self.eventTypeDict[eventName].append(event)
         else:
            self.eventTypeDict[eventName] = [event]
-        print("{0} event: {1}".format(self.charName, eventName))
+        self.__GeneralEventCallback__(event)
         return
 
     def ToString(self, mode:int):
@@ -74,7 +78,7 @@ class CharacterData:
         return switch[mode]()
 
     def __FullReport__(self):
-        retval = ["{0} earned {1} score from following sources: ".format(self.charName, self.expTotal)]
+        retval = ["{0} earned {1} score from following sources: ".format(self.name, self.expTotal)]
         for exp in self.expDict.values():
             retval.append("\n\t- {0} ({1}%)".format(exp.ToString(), exp.expTotal/self.expTotal))
         return ''.join(retval)
@@ -83,3 +87,35 @@ class CharacterData:
         deaths = self.eventTypeDict.get("Death").count()
         kd = "Infinity" if deaths == 0 else kills/deaths
         return "{0} - K: {1}  D: {2}  K/D: {3}".format(self.charName, kills, deaths, kd)
+
+    def __ExperienceGainCallback__(self, event):
+        return
+    def __GeneralEventCallback__(self, event):
+        return
+
+class TrackerBase:
+    def __init__(self):
+        return
+
+    def ProcessEvent(self, event):
+        if self.__CanTrackEvent__(event):
+            self.__AddEvent__(event)
+        return
+    
+    def AddTrackedObject(self, objData):
+        if self.__CanTrackObject__(objData):
+            self.__TrackObject__(objData)
+        return
+
+    def __CanTrackObject__(self, objData):
+        return False
+
+    def __TrackObject__(self, objData):
+        return
+
+    def __CanTrackEvent__(self, event):
+        return False
+
+    def __AddEvent__(self, event):
+        return
+    

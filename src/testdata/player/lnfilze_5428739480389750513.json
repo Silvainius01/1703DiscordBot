@@ -1,1 +1,43 @@
-{"character_list": [{"character_id": "5428739480389750513", "name": {"first": "lnfilze", "first_lower": "lnfilze"}, "faction_id": "3", "head_id": "1", "title_id": "0", "times": {"creation": "1528397370", "creation_date": "2018-06-07 18:49:30.0", "last_save": "1588051676", "last_save_date": "2020-04-28 05:27:56.0", "last_login": "1588049237", "last_login_date": "2020-04-28 04:47:17.0", "login_count": "129", "minutes_played": "5633"}, "certs": {"earned_points": "11032", "gifted_points": "2494", "spent_points": "13358", "available_points": "168", "percent_to_next": "0.2063333333332"}, "battle_rank": {"percent_to_next": "94", "value": "44"}, "profile_id": "10", "daily_ribbon": {"count": "5", "time": "1588032000", "date": "2020-04-28 00:00:00.0"}, "prestige_level": "0"}], "returned": 1}
+{
+  "character_list": [
+    {
+      "character_id": "5428739480389750513",
+      "name": {
+        "first": "lnfilze",
+        "first_lower": "lnfilze"
+      },
+      "faction_id": "3",
+      "head_id": "1",
+      "title_id": "0",
+      "times": {
+        "creation": "1528397370",
+        "creation_date": "2018-06-07 18:49:30.0",
+        "last_save": "1588051676",
+        "last_save_date": "2020-04-28 05:27:56.0",
+        "last_login": "1588049237",
+        "last_login_date": "2020-04-28 04:47:17.0",
+        "login_count": "129",
+        "minutes_played": "5633"
+      },
+      "certs": {
+        "earned_points": "11032",
+        "gifted_points": "2494",
+        "spent_points": "13358",
+        "available_points": "168",
+        "percent_to_next": "0.2063333333332"
+      },
+      "battle_rank": {
+        "percent_to_next": "94",
+        "value": "44"
+      },
+      "profile_id": "10",
+      "daily_ribbon": {
+        "count": "5",
+        "time": "1588032000",
+        "date": "2020-04-28 00:00:00.0"
+      },
+      "prestige_level": "0"
+    }
+  ],
+  "returned": 1
+}

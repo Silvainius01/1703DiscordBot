@@ -3,9 +3,10 @@ import sys
 import time
 import tkinter
 from collections import namedtuple
-from CharacterData import *
 from DataFetcher import *
 from web_sock import *
+from EventFilter import *
+from TrackerBase import *
 
 class EventManagerPS2:
     def __init__(self):
@@ -15,23 +16,17 @@ class EventManagerPS2:
         "FacilityControl": [],
         "Metagame": [],
         }
-        # Character data currently being updated
-        self.trackedChars = {
+
+        self.filters = {
+            "ex" : [],
+            "in" : []
         }
-        # Character data that is currently cached in memory, and not being actively updated. Examples being logged out chars
-        self.untrackedChars = {
-        }
-        # Characters that we want data for, but have not logged in or proc'd an event.
-        self.targetChars = {
-        }
-        # Dict for hashes of events where two tracked chars interacted with each other. Involved in duplicate event prevention.
-        self.multiCharEvents = {
-        }
-        # Reversal names for easier data management. 
-        self.death2kill = {
-            "Death":"Kill",
-            "VehicleDestroy":"VehicleKill"
-        }
+
+        self.tracker = TrackerBase()
+        return
+
+    def SetTracker(self, tracker:TrackerBase):
+        self.tracker = tracker
         return
 
     def ReceiveEvent(self, payload:str):
@@ -39,101 +34,41 @@ class EventManagerPS2:
             Entry point for all events received from websocket.
         """
         eventPayload = json.loads(payload).get("payload")
-        if eventPayload == None:
+
+        # If no payload or event doesnt pass filters
+        if eventPayload == None or self.FilterEvent(eventPayload):
             return
-        if eventPayload.get("character_id"):
-            self.ProcessCharacterEvent(eventPayload)
-        else:
-            self.eventTypeDict[eventPayload.get("event_name")].append(eventPayload)
+        self.tracker.ProcessEvent(eventPayload)
         return
 
-    def ProcessCharacterEvent(self, event):
-        """
-            Processes an event about a character. Will ignore events about non-target characters, and automatically handles tracking and untracking players.
-        """
-        charId = event["character_id"]
-        eventName = event["event_name"]
+    def FilterEvent(self, event):
+        # Exclusive filters drop an event if triggered
+        for eventFilter in self.filters["ex"]:
+            if (eventFilter.FilterEvent(event)):
+                return True
+        
+        # Event must pass at least one inclusive filter if present
+        if len(self.filters["in"]) > 0:
+            for eventFilter in self.filters["in"]:
+                if(eventFilter.FilterEvent(event)):
+                    return False
+            return True
+        # Event passes if no inclusive filters are present
+        return False
 
-        # If this is a kill event, determine if a tracked character was killed.
-        if event.get("attacker_character_id"):
-            attackerId = event["attacker_character_id"]
-            if not self.IsTargetCharacter(charId):
-                charId = attackerId # If the killed player is not tracked, set next candidate to be the killer
-                event["event_name"] = self.death2kill.get(eventName, eventName+"_Kill")
-            # If this is a multi-char event, process accordingly.
-            elif self.IsTargetCharacter(attackerId):
-                self.ProcessMultiCharEvent(event)
-                return
-
-        if not self.IsTrackedCharacter(charId):
-            if not self.IsTargetCharacter(charId):
-                return # If the character is not a target char, ignore event.
-            self.StartTrackingCharacter(charId) # Start tracking this character if it is a target.
-        self.trackedChars[charId].AddEvent(event)
+    def SetFilter(self, filterName, filterValue, filterMode):
+        if self.filters.get(filterMode) == None:
+            print("ERROR: invalid filter mode {0}".format(filterMode))
+        self.filters[filterMode].append(EventFilter(filterName, filterValue))
         return
-
-    def ProcessMultiCharEvent(self, event):
-        """
-            Processes an event in which two tracked chars interact with other
-        """
-        charId = event["character_id"]
-        attackerId = event["attacker_character_id"]
-        eventName = event["event_name"]
-
-        # Make sure to track chars involved.
-        self.StartTrackingCharacter(charId)
-        self.StartTrackingCharacter(attackerId)
-
-        # Add event for defender as normal
-        self.trackedChars[charId].AddEvent(event)
-
-        # Reverse event name for attacker, then add
-        event["event_name"] = self.death2kill.get(eventName, eventName+"_Kill")
-        self.trackedChars[attackerId].AddEvent(event)
+    def SetInverseFilter(self, filterName, filterValue, filterMode):
+        if self.filters.get(filterMode) == None:
+            print("ERROR: invalid filter mode {0}".format(filterMode))
+        self.filters[filterMode].append(InverseEventFilter(filterName, filterValue))
         return
-
-    def AddTargetCharacter(self, characterId:str, characterName:str):
-        """
-            Tells the Manager to keep a look out for events from these characters.
-        """
-        if self.IsTrackedCharacter(characterId):
-            return False
-        self.targetChars[characterId] = characterName
-        print("Added target character " + characterName + " with id " + characterId)
-        return True
-
-    def StartTrackingCharacter(self, characterId:str):
-        """
-           Generates a CharacterData object for the Id provided. Will fail if Id is not a target character. 
-        """
-        if self.targetChars.get(characterId):
-            charName = self.targetChars.pop(characterId)
-            self.trackedChars[characterId] = CharacterData(characterId, charName)
-            print("Began tracking "+charName)
-        if self.untrackedChars.get(characterId):
-            self.trackedChars[characterId] = self.untrackedChars.pop(characterId)
+    def SetOutfitWarsFilter(self):
+        self.filters["ex"].append(OutfitWarsFilter())
         return
-
-    def StopTrackingCharacter(self, characterId:str):
-        """
-            Cahces a tracked characters data, currently unused.
-        """
-        if not self.trackedChars.get(characterId):
-            return
-        charData = self.trackedChars.pop(characterId)
-        self.untrackedChars[characterId] = charData
-        return
-
-    def IsTargetCharacter(self, characterId:str):
-        return (self.targetChars.get(characterId) != None or
-                self.trackedChars.get(characterId) != None or
-                self.untrackedChars.get(characterId) !=  None)
-
-    def IsTrackedCharacter(self, characterId):
-        return self.trackedChars.get(characterId) != None
-
-    def IsUntrackedCharacter(self, characterId):
-        return self.untrackedChars.get(characterId) != None
 
 
 
@@ -148,4 +83,4 @@ if __name__ == "__main__":
 
     # init websocket
     websocket_listener = PS2_WebSocket_Listener([manager.ReceiveEvent])
-    websocket_listener.startListener(manager.targetChars.keys())
+    websocket_listener.startListener(list(manager.targetChars.keys()), ["AchievementEarned","BattleRankUp","Death","ItemAdded","SkillAdded","VehicleDestroy","GainExperience","PlayerFacilityCapture","PlayerFacilityDefend"])

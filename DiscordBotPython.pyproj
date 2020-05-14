@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{ee2c16a3-8338-47a3-8a11-44fc63eab7de}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>src\OpsTracker.py</StartupFile>
+    <StartupFile>src\Console.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,11 +22,18 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="src\Calender.py" />
-    <Compile Include="src\CharacterData.py">
+    <Compile Include="src\TrackerBase.py" />
+    <Compile Include="src\CharacterTracker.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\CommandValidation.py" />
-    <Compile Include="src\OpsTracker.py">
+    <Compile Include="src\EventFilter.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\OutfitTracker.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\Console.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="src\PsEventManager.py">
@@ -35,29 +42,40 @@
     <Compile Include="src\DataFetcher.py" />
     <Compile Include="src\web_sock.py" />
     <Compile Include="src\WhalerBot.py" />
+    <Compile Include="src\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="packages\" />
     <Folder Include="src\" />
     <Folder Include="src\testdata\" />
+    <Folder Include="src\testdata\events\" />
     <Folder Include="src\testdata\outfit\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="src\testdata\Death.json">
+    <Content Include="src\testdata\events\Death.json">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\testdata\AchievementEarned.json" />
-    <Content Include="src\testdata\BattleRankUp.json" />
-    <Content Include="src\testdata\GainExperience.json" />
-    <Content Include="src\testdata\ItemAdded.json" />
-    <Content Include="src\testdata\outfit\1703_members.json" />
-    <Content Include="src\testdata\PlayerFacilityCapture.json" />
-    <Content Include="src\testdata\PlayerFacilityDefend.json" />
-    <Content Include="src\testdata\PlayerLogin.json" />
-    <Content Include="src\testdata\PlayerLogout.json" />
-    <Content Include="src\testdata\SkillAdded.json" />
+    <Content Include="src\testdata\events\AchievementEarned.json" />
+    <Content Include="src\testdata\events\BattleRankUp.json" />
+    <Content Include="src\testdata\MetaGameStates.json" />
+    <Content Include="src\testdata\FacilityTypes.json" />
+    <Content Include="src\testdata\namespaces.json" />
+    <Content Include="src\testdata\VehicleTypes.json" />
+    <Content Include="src\testdata\_.json" />
+    <Content Include="src\testdata\Zones.json" />
+    <Content Include="src\testdata\MetaGameTypes.json" />
+    <Content Include="src\testdata\events\GainExperience.json" />
+    <Content Include="src\testdata\events\ItemAdded.json" />
+    <Content Include="src\testdata\events\PlayerFacilityCapture.json" />
+    <Content Include="src\testdata\events\PlayerFacilityDefend.json" />
+    <Content Include="src\testdata\events\PlayerLogin.json" />
+    <Content Include="src\testdata\events\PlayerLogout.json" />
+    <Content Include="src\testdata\events\SkillAdded.json" />
     <Content Include="src\testdata\ExpTypes.json" />
-    <Content Include="src\testdata\VehicleDestroy.json" />
+    <Content Include="src\testdata\events\MetaGame.json" />
+    <Content Include="src\testdata\events\VehicleDestroy.json" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.8-32" />

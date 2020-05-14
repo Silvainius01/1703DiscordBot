@@ -1,0 +1,17 @@
+{
+	"payload": {
+		"event_name": "MetagameEvent",
+		"experience_bonus": "25.000000",
+		"faction_nc": "22.352942",
+		"faction_tr": "47.058823",
+		"faction_vs": "29.411766",
+		"instance_id": "29027",
+		"metagame_event_id": "153",
+		"metagame_event_state": "135",
+		"metagame_event_state_name": "started",
+		"timestamp": "1589342260",
+		"world_id": "1"
+	},
+	"service": "event",
+	"type": "serviceMessage"
+}
