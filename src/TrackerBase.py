@@ -16,7 +16,7 @@ class TrackedEventMetaData:
     
     def __GetMetaDataFunc__(self, event, eventName):
         switch = {
-            "VehicleDestroy" : self.__VehicleKill__
+            "VehicleKill" : self.__VehicleKill__
         }
         try:
             switch[eventName](event);
@@ -73,15 +73,15 @@ class TrackedDataBase:
         eventName = event.get("event_name")
         if eventName == None:
             return
-        self.metaData.AddEvent(event)
         if eventName == "GainExperience":
             self.__AddExpTick__(event)
             return
-        elif eventName in self.eventTypeDict:
-            self.eventTypeDict[eventName].append(event)
         else:
-           self.eventTypeDict[eventName] = [event]
-        self.__GeneralEventCallback__(event)
+            if eventName in self.eventTypeDict:
+                self.eventTypeDict[eventName].append(event)
+            else: self.eventTypeDict[eventName] = [event]
+            self.__GeneralEventCallback__(event)
+        self.metaData.AddEvent(event)
         return
 
     def ExpReportStr(self, mode:int):
