@@ -1,0 +1,110 @@
+[
+  {
+    "tag": "SKL",
+    "name": "SoKaars Legion",
+    "kills": 1639,
+    "deaths": 1359,
+    "revives": 156,
+    "airkills": 42,
+    "sundykills": 20,
+    "vehiclekills": 126,
+    "cortiumharvest": 191,
+    "repair": 1127
+  },
+  {
+    "tag": "PRAE",
+    "name": "Praetorians VS",
+    "kills": 255,
+    "deaths": 163,
+    "revives": 0,
+    "airkills": 10,
+    "sundykills": 0,
+    "vehiclekills": 3,
+    "cortiumharvest": 0,
+    "repair": 53
+  },
+  {
+    "tag": "VKTZ",
+    "name": "Vanu Sovereign KatZ",
+    "kills": 288,
+    "deaths": 185,
+    "revives": 0,
+    "airkills": 7,
+    "sundykills": 1,
+    "vehiclekills": 31,
+    "cortiumharvest": 53,
+    "repair": 466
+  },
+  {
+    "tag": "AODR",
+    "name": "Angels of Death TR",
+    "kills": 296,
+    "deaths": 358,
+    "revives": 37,
+    "airkills": 6,
+    "sundykills": 10,
+    "vehiclekills": 21,
+    "cortiumharvest": 57,
+    "repair": 594
+  },
+  {
+    "tag": "1TMI",
+    "name": "1st Terran Mobile Infantry",
+    "kills": 101,
+    "deaths": 202,
+    "revives": 9,
+    "airkills": 9,
+    "sundykills": 2,
+    "vehiclekills": 19,
+    "cortiumharvest": 87,
+    "repair": 526
+  },
+  {
+    "tag": "2RAF",
+    "name": "2nd Republic Assault Force",
+    "kills": 332,
+    "deaths": 538,
+    "revives": 110,
+    "airkills": 12,
+    "sundykills": 14,
+    "vehiclekills": 30,
+    "cortiumharvest": 220,
+    "repair": 3191
+  },
+  {
+    "tag": "VCO",
+    "name": "Voodoo Company",
+    "kills": 615,
+    "deaths": 590,
+    "revives": 13,
+    "airkills": 1,
+    "sundykills": 8,
+    "vehiclekills": 17,
+    "cortiumharvest": 16,
+    "repair": 671
+  },
+  {
+    "tag": "8SEC",
+    "name": "Eight Seconds",
+    "kills": 21,
+    "deaths": 20,
+    "revives": 0,
+    "airkills": 0,
+    "sundykills": 0,
+    "vehiclekills": 6,
+    "cortiumharvest": 54,
+    "repair": 193
+  },
+  {
+    "tag": "KN1",
+    "name": "Kneel No One",
+    "kills": 269,
+    "deaths": 212,
+    "revives": 4,
+    "airkills": 0,
+    "sundykills": 1,
+    "vehiclekills": 2,
+    "cortiumharvest": 0,
+    "repair": 0
+  }
+]

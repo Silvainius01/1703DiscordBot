@@ -18,11 +18,12 @@ class TrackedCharacterData(TrackedDataBase):
 
     def __ExperienceGainCallback__(self, event):
         if self.allowPrinting:
-            print("{0} gained {1}xp from {2}".format(self.name,event["amount"],ExpAggregate.experienceDict[expId].get("description", "Unknown Experience Type "+ expId)))
+            expId = event["experience_id"]
+            print("{0} gained {1} score from {2}".format(self.name,event["amount"],ExpAggregate.GetExpDesc(expId)))
         return
     def __GeneralEventCallback__(self, event):
         if self.allowPrinting:
-            print("{0} event: {1}".format(self.name, eventName))
+            print("{0} event: {1}".format(self.name, event["event_name"]))
         return
 
 class CharacterTracker(TrackerBase):
@@ -62,6 +63,9 @@ class CharacterTracker(TrackerBase):
             # If it's a suicide
             if attackerId == charId:
                 event["event_name"] += " - Suicide"
+            elif charId == "0":
+                charId = attackerId
+                event["event_name"] += "_CharId0"
             # If the killed player is not tracked, flip name of event accordingly, then  
             elif not self.IsTargetCharacter(charId):
                 if self.CharsOnSameTeam(charId, attackerId):
@@ -127,15 +131,14 @@ class CharacterTracker(TrackerBase):
             return self.trackedChars[id].GetFaction()
 
         factionId = CharacterTracker.charFactionMap.get(id)
-        if factionId != None:
-            return factionId
-        # Register character faction if not found
-        factionId = DataFetcher.fetchCharacterIdFaction(id)
-        if factionId.get("status"):
-            factionId = factionId.get("faction_id")
-            CharacterTracker.charFactionMap[id] = factionId
-            return factionId
-        return None
+        if factionId == None:
+            # Register character faction if not found
+            factionId = DataFetcher.fetchCharacterIdFaction(id)
+            if factionId.get("status"):
+                factionId = factionId.get("faction_id")
+                CharacterTracker.charFactionMap[id] = factionId
+            return "-1";
+        return factionId
 
     def IsTrackedCharacter(self, characterId):
         return self.trackedChars.get(characterId) != None

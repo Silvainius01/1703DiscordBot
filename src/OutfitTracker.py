@@ -20,9 +20,31 @@ class TrackedOutfitData(TrackedDataBase):
     def ContainsChar(self, charId):
         return self.charTracker.trackedChars.get(charId) != None
 
+    def BasicTeamStats(self):
+        stats = {
+            "tag": self.tag,
+            "name": self.name,
+            "kills": len(self.eventTypeDict.get("Kill", {})),
+            "deaths": len(self.eventTypeDict.get("Death", {})),
+            "revives": self.__GetExpCount__("7"),
+            "airkills": self.metaData.airVehicleKills,
+            "sundykills": self.metaData.sundererKills,
+            "vehiclekills": self.metaData.groundVehicleKills - self.metaData.sundererKills,
+            "cortiumharvest": self.__GetExpCount__("674"),
+            "repair": 0
+        }
+
+        for expId in ExpMetaData.experienceTypes["AllRepairs"]:
+            stats["repair"] += self.__GetExpCount__(expId)
+        return stats
+
+    def __GetExpCount__(self, expId):
+        temp = self.expDict.get(expId)
+        return temp.expCount if temp != None else 0
+
     def __ExperienceGainCallback__(self, event):
         expId = event["experience_id"]
-        desc = ExpAggregate.experienceDict[expId].get("description", "Unknown Experience Type "+ expId)
+        desc = ExpMetaData.GetDesc(expId)
         print("[{0}] {2}: {1} score generated".format(self.tag,event["amount"],desc))
         return
     def __GeneralEventCallback__(self, event):
@@ -35,6 +57,16 @@ class OutfitTracker(TrackerBase):
         self.characterToOutfit = {}
         self.untrackedChars = {}
         return super().__init__()
+
+    def GetBasicTeamStats(self):
+        statsList = []
+        for id in self.trackedOutfits:
+            outfit = self.trackedOutfits[id]
+            statsList.append(outfit.BasicTeamStats())
+        return statsList;
+
+    def GetTrackerData(self):
+        return self.GetBasicTeamStats()
 
     def __CanTrackObject__(self, objData):
         return objData.get("outfit_id") != None
@@ -50,15 +82,25 @@ class OutfitTracker(TrackerBase):
 
     def __CanTrackEvent__(self, event):
         charId = event.get("character_id")
-        if charId == None or self.untrackedChars.get(charId):
+        if charId == None:
             return False
+
         outfitId = self.characterToOutfit.get(charId)
-        if outfitId == None:
+        attackerId = event.get("attacker_character_id")
+        attackerOutfitId = self.characterToOutfit.get(attackerId) if attackerId != None else None
+        if outfitId == None and attackerOutfitId == None:
             return False
         return True
 
     def __AddEvent__(self, event):
         charId = event.get("character_id")
+        attackerId = event.get("attacker_character_id")
         outfitId = self.characterToOutfit.get(charId)
-        self.trackedOutfits[outfitId].AddEvent(event)
+
+        if outfitId != None:
+            self.trackedOutfits[outfitId].AddEvent(event)
+        if attackerId != None:
+            attackerOutfitId = self.characterToOutfit.get(attackerId)
+            if attackerOutfitId != None:
+                self.trackedOutfits[attackerOutfitId].AddEvent(event)
         return

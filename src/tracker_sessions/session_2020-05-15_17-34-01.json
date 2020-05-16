@@ -1,0 +1,110 @@
+[
+  {
+    "tag": "SKL",
+    "name": "SoKaars Legion",
+    "kills": 26,
+    "deaths": 45,
+    "revives": 5,
+    "airkills": 0,
+    "sundykills": 0,
+    "vehiclekills": 2,
+    "cortiumharvest": 2,
+    "repair": 106
+  },
+  {
+    "tag": "PRAE",
+    "name": "Praetorians VS",
+    "kills": 9,
+    "deaths": 7,
+    "revives": 7,
+    "airkills": 0,
+    "sundykills": 0,
+    "vehiclekills": 0,
+    "cortiumharvest": 0,
+    "repair": 1
+  },
+  {
+    "tag": "VKTZ",
+    "name": "Vanu Sovereign KatZ",
+    "kills": 1,
+    "deaths": 1,
+    "revives": 0,
+    "airkills": 0,
+    "sundykills": 0,
+    "vehiclekills": 0,
+    "cortiumharvest": 0,
+    "repair": 0
+  },
+  {
+    "tag": "AODR",
+    "name": "Angels of Death TR",
+    "kills": 11,
+    "deaths": 33,
+    "revives": 16,
+    "airkills": 1,
+    "sundykills": 1,
+    "vehiclekills": 0,
+    "cortiumharvest": 0,
+    "repair": 17
+  },
+  {
+    "tag": "1TMI",
+    "name": "1st Terran Mobile Infantry",
+    "kills": 1,
+    "deaths": 3,
+    "revives": 3,
+    "airkills": 0,
+    "sundykills": 0,
+    "vehiclekills": 0,
+    "cortiumharvest": 0,
+    "repair": 2
+  },
+  {
+    "tag": "2RAF",
+    "name": "2nd Republic Assault Force",
+    "kills": 4,
+    "deaths": 5,
+    "revives": 0,
+    "airkills": 1,
+    "sundykills": 1,
+    "vehiclekills": 2,
+    "cortiumharvest": 3,
+    "repair": 11
+  },
+  {
+    "tag": "VCO",
+    "name": "Voodoo Company",
+    "kills": 19,
+    "deaths": 26,
+    "revives": 4,
+    "airkills": 1,
+    "sundykills": 0,
+    "vehiclekills": 0,
+    "cortiumharvest": 0,
+    "repair": 5
+  },
+  {
+    "tag": "8SEC",
+    "name": "Eight Seconds",
+    "kills": 0,
+    "deaths": 0,
+    "revives": 6,
+    "airkills": 0,
+    "sundykills": 0,
+    "vehiclekills": 0,
+    "cortiumharvest": 0,
+    "repair": 1
+  },
+  {
+    "tag": "KN1",
+    "name": "Kneel No One",
+    "kills": 0,
+    "deaths": 1,
+    "revives": 0,
+    "airkills": 0,
+    "sundykills": 0,
+    "vehiclekills": 0,
+    "cortiumharvest": 0,
+    "repair": 4
+  }
+]

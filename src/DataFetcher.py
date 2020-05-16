@@ -87,38 +87,31 @@ class DataFetcher:
         url = "{0}/character/?name.first={1}&c:show=faction_id".format(baseRequestUrl, nameOrId)
         return DataFetcher.__fetchCharacterFaction__(url)
     def __fetchCharacterFaction__(url):
-        response = requests.get(url)
-        if(response.status_code == 200):
-            response_text = response.text
-            factionId = json.loads(response_text).get("character_list")[0].get("faction_id")
-            return {"status": True, "faction_id": factionId }
+        try:
+            response = requests.get(url)
+            if(response.status_code == 200):
+                response_text = response.text
+                factionId = json.loads(response_text).get("character_list", ["-1"])[0].get("faction_id")
+                return {"status": True, "faction_id": factionId }
+        except Exception as exc:
+            return {"status":False, "exception": exc}
         return {"status":False}
     
     def fetchExperienceDataList(saveToDisk:bool):
-        url = baseRequestUrl+"/experience?c:limit=999999"
+        url = "{0}/experience?c:limit=999999".format(baseRequestUrl)
         response = requests.get(url)
         try:
             if(response.status_code == 200):
                 response_text = response.text
                 expTypeData = json.loads(response_text)
                 if(saveToDisk):
-                    saveDataToDisk(outfitData, saveDirectory, "ExpTypes.json")
+                    saveDataToDisk(expTypeData, saveDirectory, "ExpTypes.json")
                 return {"status": True, "experience_list": expTypeData.get("experience_list") }
             else:
                 raise Exception("Bad status code from request!")
         except Exception as exc:
             return {"status": False, "print": True, "exception": exc}
         return {"status":False}
-    
-    def fetchExperienceDataDict(saveToDisk:bool):
-        expList = DataFetcher.fetchExperienceDataList(saveToDisk)
-        if expList.get("status") == False:
-            return expList
-        expDict = {}
-        expList = expList.get("experience_list")
-        for expType in expList:
-            expDict[expType.get("experience_id")] = expType
-        return expDict
 
     def fetchDynamicZoneData(worldId:str, zoneId:str, saveToDisk:bool):
         url = "{0}/map/?world_id={1}&zone_ids={2}".format(baseRequestUrl, worldId, zoneId)
@@ -138,10 +131,126 @@ class DataFetcher:
         except Exception as exc:
             return {"status": False, "print": True, "exception": exc}
         return {"status":False}
-
     def isDynamicZoneKoltyr(worldId:str, zoneId:str):
         zoneData = DataFetcher.fetchDynamicZoneData(worldId, zoneId, False)
         if zoneData.get("status") == True:
             isKoltyr = len(zoneData.get("zoneData").get("Regions").get("Row")) == 9
             return {"status":True, "isKoltyr":isKoltyr}
         return {"status":False}
+
+    def fetchVehicleDataList(saveToDisk:bool):
+        url = "{0}/vehicle?c:limit=5000".format(baseRequestUrl)
+        response = requests.get(url)
+        try:
+            if(response.status_code == 200):
+                response_text = response.text
+                data = json.loads(response_text)
+                if(saveToDisk):
+                    saveDataToDisk(data, saveDirectory, "VehicleTypes.json")
+                return {"status": True, "vehicle_list": data.get("vehicle_list") }
+            else:
+                raise Exception("Bad status code from request!")
+        except Exception as exc:
+            return {"status": False, "print": True, "exception": exc}
+        return {"status":False}
+
+class ExpMetaData:
+    experienceTypes = {
+        "AllRepairs" : [],
+        "InfantryKills" : "1",
+        "Revive" : "7",
+        "CortiumHarvest" : "674"
+    }
+    experienceDict = {}
+
+    def __init__():
+        ExpMetaData.experienceDict = ExpMetaData.__InitExperienceDict__()
+        return
+
+    def GetExp(expId):
+        data = ExpMetaData.experienceDict.get(expId)
+        if data == None:
+            data = { 
+                "experience_id": "{0}".format(expId),
+                "description":"Unknown Exp Type {0}".format(expId),
+                "xp": "0"
+            }
+            ExpMetaData.experienceDict[expId] = data
+        return data
+    def GetDesc(expId):
+        return ExpMetaData.GetExp(expId).get("description")
+
+    def __GetRawExperienceData__():
+        print("Getting Experience Data from API...")
+        expList = DataFetcher.fetchExperienceDataList(True)
+        while not expList["status"]:
+            print("Failed getting experience data. Retrying...")
+            expList = DataFetcher.fetchExperienceDataList(True)
+        return expList
+
+    def __InitExperienceDict__():
+        expDict = {}
+        for expType in ExpMetaData.__GetRawExperienceData__().get("experience_list"):
+            expDict[expType.get("experience_id")] = expType
+            ExpMetaData.__AnalyzeExpType__(expType)
+        print("Experience data retrieved.")
+        return expDict
+
+    def __AnalyzeExpType__(expData):
+        id = expData.get("experience_id")
+        desc = expData.get("description")
+
+        if ExpMetaData.__CheckRepair__(id, desc): return
+        return
+
+    def __CheckRepair__(expId, expDesc):
+        if expDesc.find("Repair") > -1:
+            ExpMetaData.experienceTypes["AllRepairs"].append(expId)
+            return True
+        return False
+
+class VehicleMetaData:
+    airVehicles = []
+    groundVehicles = []
+    vehicleDict = {}
+
+    def __init__():
+        VehicleMetaData.vehicleDict = VehicleMetaData.__InitVehicleData__()
+        return
+
+    def GetVehicle(id):
+        return VehicleMetaData.vehicleDict.get(id, {})
+    def GetVehicleName(id):
+        return VehicleMetaData.GetVehicle(id).get("name", {}).get("en", "UNKNOWN VEHICLE")
+
+    def IsGroundVehicle(id):
+        vtype = VehicleMetaData.GetVehicle(id).get("type_id", "")
+        return vtype == "5" or vtype == "2"
+    def IsAirVehicle(id):
+        vtype = VehicleMetaData.GetVehicle(id).get("type_id", "")
+        return vtype == "1"
+
+    def __GetRawVehicleData__():
+        print("Getting Vehicle Data from API...")
+        vlist = DataFetcher.fetchVehicleDataList(True)
+        while not vlist["status"]:
+            print("Failed. Retrying...")
+            vlist = DataFetcher.fetchVehicleDataList(True)
+        return vlist["vehicle_list"]
+
+    def __InitVehicleData__():
+        vdict = {}
+        for v in VehicleMetaData.__GetRawVehicleData__():
+            vdict[v.get("vehicle_id")] = v
+        print("Vehicle Data retrieved")
+        return vdict
+    
+    def __AnalyzeVehicle__(vdata):
+        id = vdata["vehicle_id"]
+
+        if VehicleMetaData.IsAirVehicle(id): airVehicles.append(id)
+        elif VehicleMetaData.IsGroundVehicle(id): groundVehicles.append(id)
+        return
+
+ExpMetaData.__init__()
+VehicleMetaData.__init__()

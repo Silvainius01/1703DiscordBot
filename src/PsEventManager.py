@@ -2,11 +2,23 @@ import json
 import sys
 import time
 import tkinter
+import os
+import datetime
+
 from collections import namedtuple
 from DataFetcher import *
 from web_sock import *
 from EventFilter import *
 from TrackerBase import *
+
+def saveDataToDisk(data, filePath:str, fileName:str):
+    if not os.path.exists(filePath):
+        os.makedirs(filePath)
+    response_serialized = json.dumps(data)
+    dump_file = open(filePath+"\\"+fileName, "w")
+    dump_file.write(response_serialized)
+    dump_file.close()
+    return
 
 class EventManagerPS2:
     def __init__(self):
@@ -23,6 +35,11 @@ class EventManagerPS2:
         }
 
         self.tracker = TrackerBase()
+        self.writeEnabled = True
+        self.writeToDiskInterval = 50
+        self.eventSinceWrite = 0
+        self.writePath = "{0}\\tracker_sessions".format(os.path.dirname(os.path.abspath(__file__)))
+        self.sessionFileName = "session_{0}.json".format(datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
         return
 
     def SetTracker(self, tracker:TrackerBase):
@@ -38,7 +55,14 @@ class EventManagerPS2:
         # If no payload or event doesnt pass filters
         if eventPayload == None or self.FilterEvent(eventPayload):
             return
-        self.tracker.ProcessEvent(eventPayload)
+        if self.tracker.ProcessEvent(eventPayload):
+            if self.writeEnabled:
+                if self.eventSinceWrite > self.writeToDiskInterval:
+                    print("")
+                    data = self.tracker.GetTrackerData()
+                    saveDataToDisk(data, self.writePath, self.sessionFileName)
+                    self.eventSinceWrite = 0
+                self.eventSinceWrite += 1
         return
 
     def FilterEvent(self, event):
@@ -64,10 +88,21 @@ class EventManagerPS2:
     def SetInverseFilter(self, filterName, filterValue, filterMode):
         if self.filters.get(filterMode) == None:
             print("ERROR: invalid filter mode {0}".format(filterMode))
+            return
         self.filters[filterMode].append(InverseEventFilter(filterName, filterValue))
         return
     def SetOutfitWarsFilter(self):
-        self.filters["ex"].append(OutfitWarsFilter())
+        self.filters["ex"].append(DesolationZoneFilter())
+        return
+    def SetExpDescFilter(self, desc, filterMode):
+        if filterMode == "in":
+            self.filters["in"].append(InclusiveExperienceDescFilter(desc))
+        else: self.filters["ex"].append(ExclusiveExperienceDescFilter(desc))
+        return
+    def SetExpIdFilter(self, id, filterMode):
+        if filterMode == "in":
+            self.filters["in"].append(InclusiveExperienceIdFilter(id))
+        else: self.filters["ex"].append(ExclusiveExperienceIdFilter(id))
         return
 
 
