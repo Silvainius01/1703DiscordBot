@@ -15,8 +15,16 @@ def saveDataToDisk(data, filePath:str, fileName:str):
     if not os.path.exists(filePath):
         os.makedirs(filePath)
     response_serialized = json.dumps(data)
-    dump_file = open(filePath+"\\"+fileName, "w")
+    dump_file = open("{0}\\{1}".format(filePath, fileName), "w")
     dump_file.write(response_serialized)
+    dump_file.close()
+    return
+def saveDataToDiskAppend(data:str, filePath:str, fileName:str):
+    if not os.path.exists(filePath):
+        os.makedirs(filePath)
+    response_serialized = json.dumps(data)
+    dump_file = open("{0}\\{1}".format(filePath, fileName), "a")
+    dump_file.write("{0}\n".format(response_serialized))
     dump_file.close()
     return
 
@@ -26,10 +34,10 @@ class EventManagerPS2:
         "ContinentLock": [],
         "ContinentUnlock": [],
         "FacilityControl": [],
-        "Metagame": [],
+        "MetagameEvent": [],
         }
 
-        self.allProcessedEvents = []
+        self.allUnfilteredEvents = []
 
         self.filters = {
             "ex" : [],
@@ -45,7 +53,7 @@ class EventManagerPS2:
         self.eventSinceWrite = self.writeToDiskInterval
         self.writePath = "{0}\\tracker_sessions".format(basePath)
         self.sessionFileName = "session_{0}.json".format(timestr)
-        self.eventLogName = "session_{0}_eventlog.json".format(timestr)
+        self.eventLogName = "session_{0}_eventlog.txt".format(timestr)
         return
 
     def SetTracker(self, tracker:TrackerBase):
@@ -61,8 +69,9 @@ class EventManagerPS2:
         # If no payload or event doesnt pass filters
         if eventPayload == None or self.FilterEvent(eventPayload):
             return
+
+        saveDataToDiskAppend(eventPayload, self.writePath, self.eventLogName)
         if self.tracker.ProcessEvent(eventPayload):
-            self.allProcessedEvents.append(eventPayload)
             if self.writeEnabled:
                 if self.eventSinceWrite > self.writeToDiskInterval:
                     self.WriteTrackerData()
@@ -72,9 +81,7 @@ class EventManagerPS2:
 
     def WriteTrackerData(self):
         print("")
-        data = self.tracker.GetTrackerData()
-        saveDataToDisk(data, self.writePath, self.sessionFileName)
-        saveDataToDisk(data, self.writePath, self.eventLogName)
+        saveDataToDisk(self.tracker.GetTrackerData(), self.writePath, self.sessionFileName)
         return
 
     def FilterEvent(self, event):

@@ -25,7 +25,7 @@ class TrackedOutfitData(TrackedDataBase):
             "tag": self.tag,
             "name": self.name,
             "kills": len(self.eventTypeDict.get("Kill", {})),
-            "deaths": len(self.eventTypeDict.get("Death", {})),
+            "deaths": 0,
             "revives": self.__GetExpCount__("7"),
             "airkills": self.metaData.airVehicleKills,
             "sundykills": self.metaData.sundererKills,
@@ -33,6 +33,9 @@ class TrackedOutfitData(TrackedDataBase):
             "cortiumharvest": self.__GetExpCount__("674"),
             "repair": 0
         }
+
+        count = len(self.eventTypeDict.get("Death", {})) + len(self.eventTypeDict.get("Suicide", {})) + len(self.eventTypeDict.get("TeamKill", {}))
+        stats["deaths"] = count
 
         for expId in ExpMetaData.experienceTypes["AllRepairs"]:
             stats["repair"] += self.__GetExpCount__(expId)
@@ -99,7 +102,7 @@ class OutfitTracker(TrackerBase):
 
         if outfitId != None:
             self.trackedOutfits[outfitId].AddEvent(event)
-        if attackerId != None:
+        if attackerId != None and attackerId != charId:
             attackerOutfitId = self.characterToOutfit.get(attackerId)
             if attackerOutfitId != None:
                 self.trackedOutfits[attackerOutfitId].AddEvent(event)

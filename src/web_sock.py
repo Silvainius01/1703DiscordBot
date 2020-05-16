@@ -21,6 +21,7 @@ class PS2_WebSocket_Listener:
 		self.charIds = []
 		self.eventNames = []
 		self.worlds = []
+		self.maxRetry = 3
 
 	def addCallback(self, callback):
 		self.callbacks.append(callback)
@@ -72,9 +73,8 @@ class PS2_WebSocket_Listener:
 
 	async def socketConnect(self):
 		i = 0
-		maxRetry = 3
 		print("Establishing connections...")
-		while i < maxRetry:
+		while i < self.maxRetry:
 			try:
 				async with websockets.connect(self.uri) as websocket:
 					i = 0
@@ -90,10 +90,10 @@ class PS2_WebSocket_Listener:
 							callback(payload=payload)
 			except websockets.exceptions.ConnectionClosedError as exc:
 				saveDataToDiskAppend(exc, saveDirectoryWebsocket, "log.txt")
-				print("Connection Failed. Retrying ({0}/{1})...".format(i+1, maxRetry))
+				print("Connection Failed. Retrying ({0}/{1})...".format(i+1, self.maxRetry))
 			except ConnectionResetError as exc:
 				saveDataToDiskAppend(exc, saveDirectoryWebsocket, "log.txt")
-				print("Connection Reset. Retrying ({0}/{1})...".format(i+1, maxRetry))
+				print("Connection Reset. Retrying ({0}/{1})...".format(i+1, self.maxRetry))
 			i += 1
 		return
 

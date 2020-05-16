@@ -42,14 +42,18 @@ class DesolationZoneFilter(EventFilter):
     def __init__(self):
         self.desolationZones = []
         self.excludedZones = ["2","4","6","8","97","98","99"]
+        self.outfitWarsEvents = ["204", "205", "206", "207"]
         return super().__init__("zone_id", None)
 
     # Filter triggers if it detects an instanced zone that is not Koltyr or Sanctuary
     def FilterEvent(self, event):
         zoneId = event.get("zone_id")
         worldId = event.get("world_id")
+        metaGameId = event.get("metagame_event_id")
         # If we know it is desolation, dont trigger
         if zoneId in self.desolationZones:
+            return False
+        if metaGameId != None and metaGameId in self.outfitWarsEvents:
             return False
         # If no zoneId is in the event or we know the ID isn't desolation, trigger.
         if zoneId == None or worldId == None or (zoneId in self.excludedZones):

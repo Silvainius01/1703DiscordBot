@@ -27,7 +27,9 @@ class TrackedCharacterData(TrackedDataBase):
         return
 
 class CharacterTracker(TrackerBase):
-    charFactionMap = {}
+    charFactionMap = {
+        "0" : "-1"
+    }
 
     def __init__(self, allowPrinting = True):
         self.allowPrinting = allowPrinting
@@ -42,7 +44,13 @@ class CharacterTracker(TrackerBase):
         }
         self.death2teamKill = {
             "Death":"TeamKill",
-            "VehicleDestroy":"TeamVehicleKill"
+            "VehicleDestroy":"TeamVehicleKill",
+            "TeamVehicleKill" : "TeamVehicleKill",
+            "TeamKill":"TeamKill"
+        }
+        self.death2suicide = {
+            "Death" : "Suicide",
+            "VehicleDestroy":"VehicleSuicide"
         }
         return super().__init__()
 
@@ -58,17 +66,20 @@ class CharacterTracker(TrackerBase):
 
         # If this is a kill event, determine if a tracked character was killed.
         if event.get("attacker_character_id"):
+            vfaction = event.get("faction_id")
             attackerId = event["attacker_character_id"]
 
             # If it's a suicide
             if attackerId == charId:
-                event["event_name"] += " - Suicide"
-            elif charId == "0":
-                charId = attackerId
-                event["event_name"] += "_CharId0"
-            # If the killed player is not tracked, flip name of event accordingly, then  
+                event["event_name"] = self.death2suicide.get(eventName, "_Suicide")
+            # If the killed player is not tracked, flip name of event accordingly
             elif not self.IsTargetCharacter(charId):
-                if self.CharsOnSameTeam(charId, attackerId):
+                # If it a vehicle is killed and no one was in it
+                if charId == "0" and vfaction != None:
+                    if self.GetCharIdFaction(attackerId) == vfaction:
+                        event["event_name"] = self.death2teamKill.get(eventName, eventName+"_TeamKill")
+                    else: event["event_name"] = self.death2kill.get(eventName, eventName+"_Kill")
+                elif self.CharsOnSameTeam(charId, attackerId):
                     event["event_name"] = self.death2teamKill.get(eventName, eventName+"_TeamKill")
                 else: event["event_name"] = self.death2kill.get(eventName, eventName+"_Kill")
                 charId = attackerId

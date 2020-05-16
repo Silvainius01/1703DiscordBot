@@ -1,5 +1,8 @@
 
 import cmd
+import distutils
+from distutils import util
+
 from PsEventManager import *
 from CharacterTracker import *
 from OutfitTracker import *
@@ -29,11 +32,16 @@ class OpsTracker:
 
     def TrackOutfit(self, outfitTag:str):
         print("Fetching [{0}]'s data from API...".format(outfitTag))
-        outfitData = DataFetcher.fetchOutfitData(outfitTag, True).get("outfitData")
-        if outfitData != None:
-            print("Adding data to tracker...")
-            self.eventManager.tracker.AddTrackedObject(outfitData)
-        else: print("No data found!")
+        for i in range(0, 3, 1):
+            try:
+                outfitData = DataFetcher.fetchOutfitData(outfitTag, True).get("outfitData")
+                if outfitData != None:
+                    print("Adding data to tracker...")
+                    self.eventManager.tracker.AddTrackedObject(outfitData)
+                    break
+            except Exception as exc:
+                print("Exception: {1}. Retrying {0}/3...".format(i, exc))
+            print("Failed. Retrying {0}/3...".format(i))
         return
     def TrackOutfits(self, outfitTags:list):
         for tag in outfitTags:
@@ -41,13 +49,14 @@ class OpsTracker:
         return
 
     def TrackCharacter(self, characterName:str):
-        char = DataFetcher.fetchCharacterName(characterName, True)
-        if char.get("status"):
-            charId = char.get("charData").get("character_id")
-            if not self.eventManager.AddTargetCharacter(charId, characterName):
-                print("Failed to add character")
-        else:
-            print("Failed to fetch character")
+        for i in range(0, 3, 1):
+            print("Fetching {0}'s data from API...")
+            char = DataFetcher.fetchCharacterName(characterName, True)
+            if char.get("status"):
+                charId = char.get("charData").get("character_id")
+                if not self.eventManager.AddTargetCharacter(charId, characterName):
+                    print("Tracker failed character add.")
+            else: print("Failed. Retrying {0}/3...".format(i))
         return
 
     def SetFilter(self, filterName, filterValue, filterMode):
@@ -88,13 +97,12 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         super(OpsTrackerCommandInterface, self).__init__(completekey = 'enter')
         self.tracker = OpsTracker()
         self.outfitWarsMode = False
+        self.outfitWarsFilter = False
         self.events = []
         self.worlds = []
         return
 
     def do_start(self, arg):
-        if self.outfitWarsMode:
-            self.tracker.SetOutfitWarsFilter()
         self.tracker.StartTracker(self.events)
         return
 
@@ -129,14 +137,18 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         return
 
     def do_trackow(self, arg):
-        self.outfitWarsMode = not self.outfitWarsMode
-        if self.outfitWarsMode:
-            print("Exlcuding all non-Desolation events")
+        if not self.outfitWarsMode:
+            self.outfitWarsMode = True
             #self.do_listenfor("Death,VehicleDestroy,GainExperience")
             self.do_setxpfilter("Repair,7,674 in")
             self.do_setxpfilter("438,439 ex") # Exclude shield repair
-        else:
-            print("Disabled OW mode")
+        try:
+            if not self.outfitWarsFilter and bool(util.strtobool(arg)):
+                self.outfitWarsFilter = True
+                self.tracker.SetOutfitWarsFilter()
+                print("Exlcuding all non-Desolation events")
+        except ValueError:
+            print("arg must parse as boolean value.")
         return
 
     def do_listenfor(self, arg):
@@ -192,9 +204,21 @@ class OpsTrackerCommandInterface(cmd.Cmd):
                 print("Set {1}clusive XP filter for Desc: {0}".format(xp, mode))
         return
 
+    def do_setreconnect(self, arg):
+        try:
+            retry = int(arg)
+            self.tracker.websocket.maxRetry = retry
+        except ValueError:
+            print("must use valid integer")
+
 if __name__ == "__main__":
     interface = OpsTrackerCommandInterface()
     interface.cmdloop()
 
-# trackoutfit SKL,PRAE,VKTZ,AODR,1TMI,2RAF,VCO,8SEC,KN1
-# trackoutfit HHzs,YLBT,CNOP,RAVE,RvnX,TCFB,3KDC,RWCN,BSNE
+# EMERALD:
+# trackoutfit SKL,VCO,AODR,PRAE,8SEC,1TMI,VKTZ,KN1,2RAF
+# SOLTECH:
+# trackoutfit HHzs,YLBT,CN0P,RAVE,RvnX,TCFB,3KDC,RWCN,BSNE
+# trackoutfit 3KDC,RWCN,BSNE
+# COBALT:
+# trackoutfit VS,TRXF,BOIS,91AR,BROS,TRID,RE4,RMIS,URGE

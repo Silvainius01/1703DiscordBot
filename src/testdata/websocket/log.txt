@@ -41,3 +41,111 @@ code = 1006 (connection closed abnormally [internal]), no reason
 
 2020-05-16 04:08:58.119071
 [WinError 64] The specified network name is no longer available
+
+2020-05-16 04:29:05.934680
+[WinError 64] The specified network name is no longer available
+
+2020-05-16 04:30:01.031048
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 04:33:34.389359
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:08:43.963141
+[WinError 64] The specified network name is no longer available
+
+2020-05-16 05:09:10.804906
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:09:10.967560
+[WinError 64] The specified network name is no longer available
+
+2020-05-16 05:09:17.903492
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:09:45.399960
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:09:51.619795
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:16:18.307783
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:17:25.747884
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:18:14.049681
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:34:13.687772
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:34:29.478915
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:48:54.640610
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:48:54.746707
+[WinError 64] The specified network name is no longer available
+
+2020-05-16 05:56:23.507165
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:59:25.423147
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:59:36.348681
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 05:59:36.464787
+[WinError 64] The specified network name is no longer available
+
+2020-05-16 05:59:52.406653
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 06:01:55.263449
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 06:01:55.379554
+[WinError 64] The specified network name is no longer available
+
+2020-05-16 06:05:31.691872
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 06:05:45.526628
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 06:54:56.556646
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:35:00.236879
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:35:16.058410
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:44:04.543249
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:44:20.071466
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:44:33.910195
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:44:45.033350
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:45:00.150623
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:45:15.820925
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:45:37.542287
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-16 07:45:53.100583
+code = 1006 (connection closed abnormally [internal]), no reason
