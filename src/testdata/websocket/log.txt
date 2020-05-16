@@ -29,3 +29,12 @@ code = 1006 (connection closed abnormally [internal]), no reason
 
 2020-05-15 18:08:09.199207
 [WinError 64] The specified network name is no longer available
+
+2020-05-15 18:12:08.716198
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-15 18:15:13.991846
+code = 1006 (connection closed abnormally [internal]), no reason
+
+2020-05-15 18:15:35.940953
+code = 1006 (connection closed abnormally [internal]), no reason

@@ -62,7 +62,7 @@ class OpsTracker:
         self.eventManager.SetExpIdFilter(id, mode)
         return
 
-    def SetTrackerWriteSettings(self, interval, path, fileName):
+    def SetTrackerWriteSettings(self, interval, fileName, path):
         self.eventManager.writeEnabled = True
         self.eventManager.writeToDiskInterval = interval
         self.eventManager.writePath = path
