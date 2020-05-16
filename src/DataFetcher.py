@@ -41,6 +41,21 @@ class DataFetcher:
         except Exception as exc:
             return {"status": False, "print": True, "exception": exc}
         return {"status":False}
+    def fetchOutfitNameData(outfitName:str, saveToDisk:bool):
+        url = "{0}/outfit?name={1}&c:resolve=member_character_name&c:resolve=member_online_status".format(baseRequestUrl, outfitName)
+        response = requests.get(url)
+        try:
+            if(response.status_code == 200):
+                response_text = response.text
+                outfitData = json.loads(response_text)
+                if(saveToDisk):
+                    saveDataToDisk(outfitData, saveDirectoryOutfit, outfitName+".json")
+                return {"status": True, "outfitData": outfitData.get("outfit_list")[0] }
+            else:
+                raise Exception("Bad status code from request!")
+        except Exception as exc:
+            return {"status": False, "print": True, "exception": exc}
+        return {"status":False}
 
     def fetchOutfitMemberList(outfitTag:str, saveToDisk:bool):
         response = DataFetcher.fetchOutfitData(outfitTag, False)

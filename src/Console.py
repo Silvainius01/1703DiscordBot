@@ -43,9 +43,26 @@ class OpsTracker:
                 print("Exception: {1}. Retrying {0}/3...".format(i, exc))
             print("Failed. Retrying {0}/3...".format(i))
         return
+    def TrackOutfitName(self, name):
+        print("Fetching [{0}]'s data from API...".format(name))
+        for i in range(0, 3, 1):
+            try:
+                outfitData = DataFetcher.fetchOutfitNameData(name, True).get("outfitData")
+                if outfitData != None:
+                    print("Adding data to tracker...")
+                    self.eventManager.tracker.AddTrackedObject(outfitData)
+                    break
+            except Exception as exc:
+                print("Exception: {1}. Retrying {0}/3...".format(i, exc))
+            print("Failed. Retrying {0}/3...".format(i))
+        return
     def TrackOutfits(self, outfitTags:list):
         for tag in outfitTags:
             self.TrackOutfit(tag)
+        return
+    def TrackOutfitNames(self, names:list):
+        for name in names:
+            self.TrackOutfitName(name)
         return
 
     def TrackCharacter(self, characterName:str):
@@ -111,6 +128,12 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         if len(tags) > 1:
             self.tracker.TrackOutfits(tags)
         else: self.tracker.TrackOutfit(arg)
+        return
+    def do_trackoutfitname(self, arg):
+        names = arg.split(",")
+        if len(names) > 1:
+            self.tracker.TrackOutfits(names)
+        else: self.tracker.TrackOutfitName(arg)
         return
 
     def do_trackchar(self, arg):
