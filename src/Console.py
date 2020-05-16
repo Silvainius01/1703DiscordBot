@@ -91,10 +91,8 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         return
 
     def do_start(self, arg):
-        #if self.outfitWarsMode:
-            #self.do_listenfor("Death,VehicleDestroy,GainExperience")
-            #self.do_setxpfilter("Repair,7,674")
-            #self.tracker.SetOutfitWarsFilter()
+        if self.outfitWarsMode:
+            self.tracker.SetOutfitWarsFilter()
         self.tracker.StartTracker(self.events)
         return
 
