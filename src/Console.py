@@ -91,8 +91,8 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         return
 
     def do_start(self, arg):
-        if self.outfitWarsMode:
-            self.tracker.SetOutfitWarsFilter()
+        #if self.outfitWarsMode:
+        #    self.tracker.SetOutfitWarsFilter()
         self.tracker.StartTracker(self.events)
         return
 
@@ -151,7 +151,11 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         interval = args[0]
         name = args[1]
         path = args[2]
-        self.tracker.SetTrackerWriteSettings(interval, name, path)
+
+        try:
+            self.tracker.SetTrackerWriteSettings(int(interval), name, path)
+        except ValueError:
+            print("interval must be integer!")
         return
     
     def do_addworld(self, arg):
