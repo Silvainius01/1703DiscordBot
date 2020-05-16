@@ -21,6 +21,7 @@ class OpsTracker:
         self.websocket.setEventNames(events)
         self.websocket.setWorlds(worlds)
         self.websocket.startListener()
+        self.eventManager.WriteTrackerData()
         return
 
     def StopTracker(self):
@@ -67,6 +68,7 @@ class OpsTracker:
         self.eventManager.writeToDiskInterval = interval
         self.eventManager.writePath = path
         self.eventManager.sessionFileName = fileName
+        self.eventManager.eventSinceWrite = self.eventManager.writeToDiskInterval
         return
 
 class OpsTrackerCommandInterface(cmd.Cmd):
@@ -91,8 +93,8 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         return
 
     def do_start(self, arg):
-        #if self.outfitWarsMode:
-        #    self.tracker.SetOutfitWarsFilter()
+        if self.outfitWarsMode:
+            self.tracker.SetOutfitWarsFilter()
         self.tracker.StartTracker(self.events)
         return
 
@@ -130,7 +132,7 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         self.outfitWarsMode = not self.outfitWarsMode
         if self.outfitWarsMode:
             print("Exlcuding all non-Desolation events")
-            self.do_listenfor("Death,VehicleDestroy,GainExperience")
+            #self.do_listenfor("Death,VehicleDestroy,GainExperience")
             self.do_setxpfilter("Repair,7,674 in")
             self.do_setxpfilter("438,439 ex") # Exclude shield repair
         else:
@@ -195,3 +197,4 @@ if __name__ == "__main__":
     interface.cmdloop()
 
 # trackoutfit SKL,PRAE,VKTZ,AODR,1TMI,2RAF,VCO,8SEC,KN1
+# trackoutfit HHzs,YLBT,CNOP,RAVE,RvnX,TCFB,3KDC,RWCN,BSNE

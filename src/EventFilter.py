@@ -59,7 +59,7 @@ class DesolationZoneFilter(EventFilter):
         if isKoltyrDict.get("status") == False or isKoltyrDict.get("isKoltyr") == True:
             self.excludedZones.append(zoneId)
             return True
-        self.desolationIds.append(zoneId) # If it makes it this far, cache zone id
+        self.desolationZones.append(zoneId) # If it makes it this far, cache zone id
         return False
 
 class ExclusiveExperienceDescFilter(InverseEventFilter):

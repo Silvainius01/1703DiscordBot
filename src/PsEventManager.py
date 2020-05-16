@@ -29,17 +29,23 @@ class EventManagerPS2:
         "Metagame": [],
         }
 
+        self.allProcessedEvents = []
+
         self.filters = {
             "ex" : [],
             "in" : []
         }
 
+        basePath = os.path.dirname(os.path.abspath(__file__))
+        timestr = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
         self.tracker = TrackerBase()
         self.writeEnabled = True
         self.writeToDiskInterval = 50
-        self.eventSinceWrite = 0
-        self.writePath = "{0}\\tracker_sessions".format(os.path.dirname(os.path.abspath(__file__)))
-        self.sessionFileName = "session_{0}.json".format(datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+        self.eventSinceWrite = self.writeToDiskInterval
+        self.writePath = "{0}\\tracker_sessions".format(basePath)
+        self.sessionFileName = "session_{0}.json".format(timestr)
+        self.eventLogName = "session_{0}_eventlog.json".format(timestr)
         return
 
     def SetTracker(self, tracker:TrackerBase):
@@ -56,13 +62,19 @@ class EventManagerPS2:
         if eventPayload == None or self.FilterEvent(eventPayload):
             return
         if self.tracker.ProcessEvent(eventPayload):
+            self.allProcessedEvents.append(eventPayload)
             if self.writeEnabled:
                 if self.eventSinceWrite > self.writeToDiskInterval:
-                    print("")
-                    data = self.tracker.GetTrackerData()
-                    saveDataToDisk(data, self.writePath, self.sessionFileName)
+                    self.WriteTrackerData()
                     self.eventSinceWrite = 0
                 self.eventSinceWrite += 1
+        return
+
+    def WriteTrackerData(self):
+        print("")
+        data = self.tracker.GetTrackerData()
+        saveDataToDisk(data, self.writePath, self.sessionFileName)
+        saveDataToDisk(data, self.writePath, self.eventLogName)
         return
 
     def FilterEvent(self, event):
