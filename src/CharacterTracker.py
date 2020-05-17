@@ -140,16 +140,7 @@ class CharacterTracker(TrackerBase):
     def GetCharIdFaction(self, id):
         if self.IsTrackedCharacter(id):
             return self.trackedChars[id].GetFaction()
-
-        factionId = CharacterTracker.charFactionMap.get(id)
-        if factionId == None:
-            # Register character faction if not found
-            factionId = DataFetcher.fetchCharacterIdFaction(id)
-            if factionId.get("status"):
-                factionId = factionId.get("faction_id")
-                CharacterTracker.charFactionMap[id] = factionId
-            return "-1";
-        return factionId
+        return CharacterMetaData.GetCharIdFaction(id)
 
     def IsTrackedCharacter(self, characterId):
         return self.trackedChars.get(characterId) != None

@@ -43,6 +43,10 @@ class OpsTracker:
                 print("Exception: {1}. Retrying {0}/3...".format(i, exc))
             print("Failed. Retrying {0}/3...".format(i))
         return
+    def TrackOutfits(self, outfitTags:list):
+        for tag in outfitTags:
+            self.TrackOutfit(tag)
+        return
     def TrackOutfitName(self, name):
         print("Fetching [{0}]'s data from API...".format(name))
         for i in range(0, 3, 1):
@@ -55,10 +59,6 @@ class OpsTracker:
             except Exception as exc:
                 print("Exception: {1}. Retrying {0}/3...".format(i, exc))
             print("Failed. Retrying {0}/3...".format(i))
-        return
-    def TrackOutfits(self, outfitTags:list):
-        for tag in outfitTags:
-            self.TrackOutfit(tag)
         return
     def TrackOutfitNames(self, names:list):
         for name in names:
@@ -95,6 +95,19 @@ class OpsTracker:
         self.eventManager.writePath = path
         self.eventManager.sessionFileName = fileName
         self.eventManager.eventSinceWrite = self.eventManager.writeToDiskInterval
+        return
+
+    def TrackEventLog(self, file):
+        print("Running events through tracker...")
+        self.eventManager.writeEnabled = False
+        self.eventManager.writeLogEnabled = False
+
+        for line in file.readlines():
+            line = line.strip()
+            self.eventManager.ReceiveEvent("{{ \"payload\": {0} }}".format(line))
+
+        self.eventManager.writeEnabled = False
+        self.eventManager.writeLogEnabled = True
         return
 
 class OpsTrackerCommandInterface(cmd.Cmd):
@@ -163,7 +176,7 @@ class OpsTrackerCommandInterface(cmd.Cmd):
         if not self.outfitWarsMode:
             self.outfitWarsMode = True
             #self.do_listenfor("Death,VehicleDestroy,GainExperience")
-            self.do_setxpfilter("Repair,7,674 in")
+            self.do_setxpfilter("Repair,7,674,53 in")
             self.do_setxpfilter("438,439 ex") # Exclude shield repair
         try:
             if not self.outfitWarsFilter and bool(util.strtobool(arg)):
@@ -172,12 +185,6 @@ class OpsTrackerCommandInterface(cmd.Cmd):
                 print("Exlcuding all non-Desolation events")
         except ValueError:
             print("arg must parse as boolean value.")
-        return
-
-    def do_listenfor(self, arg):
-        args = arg.split(',');
-        print("Listening for {0} events")
-        self.events = args
         return
 
     def do_writesettings(self, arg):
@@ -233,6 +240,16 @@ class OpsTrackerCommandInterface(cmd.Cmd):
             self.tracker.websocket.maxRetry = retry
         except ValueError:
             print("must use valid integer")
+        return
+    
+    def do_analyzelog(self, arg):
+        if not os.path.exists(arg):
+            print("File does not exist")
+            return
+        data = open(arg)
+        self.tracker.TrackEventLog(data)
+        return
+     
 
 if __name__ == "__main__":
     interface = OpsTrackerCommandInterface()
@@ -245,3 +262,5 @@ if __name__ == "__main__":
 # trackoutfit 3KDC,RWCN,BSNE
 # COBALT:
 # trackoutfit VS,TRXF,BOIS,91AR,BROS,TRID,RE4,RMIS,URGE
+# analyzelog C:\Users\conno\Desktop\session_2020-05-16_11-06-59_eventlog.txt
+# Fool

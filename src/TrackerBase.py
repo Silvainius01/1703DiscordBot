@@ -120,13 +120,16 @@ class TrackedDataBase:
         return "{0} - K: {1}  D: {2}  K/D: {3}".format(self.charName, kills, deaths, kd)
 
     def __ExperienceGainCallback__(self, event):
+        print(event.get("event_name"))
         return
     def __GeneralEventCallback__(self, event):
+        print(event.get("event_name"))
         return
 
 class TrackerBase:
     def __init__(self):
         self.flags = { }
+        self.defaultTrackedData = TrackedDataBase("-1", "DefaultTrackerIsBeingRun")
         return
 
     def ProcessEvent(self, event):
@@ -138,7 +141,8 @@ class TrackerBase:
     def AddTrackedObject(self, objData):
         if self.__CanTrackObject__(objData):
             self.__TrackObject__(objData)
-        return
+            return True
+        return False
 
     def GetTrackerData(self):
         return {}
@@ -150,7 +154,8 @@ class TrackerBase:
         return
 
     def __CanTrackEvent__(self, event):
-        return False
+        return True
 
     def __AddEvent__(self, event):
+        self.defaultTrackedData.AddEvent(event)
         return

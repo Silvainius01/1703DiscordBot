@@ -2,6 +2,8 @@
 from TrackerBase import *
 from CharacterTracker import *
 from DataFetcher import *
+from PsEventManager import *
+from EventFilter import *
 
 class TrackedOutfitData(TrackedDataBase):
     def __init__(self, id, data):
@@ -26,7 +28,7 @@ class TrackedOutfitData(TrackedDataBase):
             "name": self.name,
             "kills": len(self.eventTypeDict.get("Kill", {})),
             "deaths": 0,
-            "revives": self.__GetExpCount__("7"),
+            "revives": self.__GetExpCount__("7") + self.__GetExpCount__("53"),
             "airkills": self.metaData.airVehicleKills,
             "sundykills": self.metaData.sundererKills,
             "vehiclekills": self.metaData.groundVehicleKills - self.metaData.sundererKills,

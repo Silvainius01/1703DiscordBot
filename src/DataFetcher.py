@@ -169,6 +169,44 @@ class DataFetcher:
             return {"status": False, "print": True, "exception": exc}
         return {"status":False}
 
+class OutfitMetaData:
+    outfits = {}
+    outfitNames = {}
+    outfitFactionMap = {}
+
+    def GetOutfitDataId(id):
+
+        return
+    def GetOutfitDataTag(tag:str):
+        data = DataFetcher.fetchOutfitData(tag, True)
+        if data["status"]:
+            outfitData = data.get("outfitData")
+            outfitId = outfitData.get("outfit_id")
+            outfitName = outfitData.get("name")
+
+            outfits[outfitId] = outfitData
+            outfitNames[outfitName] = outfitId
+
+            return outfitData.get("outfitData")
+        return
+
+    def GetOutfitIdFaction(id):
+        return
+
+class CharacterMetaData:
+    charFactionMap = {}
+
+    def GetCharIdFaction(id):
+        factionId = CharacterMetaData.charFactionMap.get(id)
+        if factionId == None:
+            # Register character faction if not found
+            factionId = DataFetcher.fetchCharacterIdFaction(id)
+            if factionId.get("status"):
+                factionId = factionId.get("faction_id")
+                CharacterMetaData.charFactionMap[id] = factionId
+            return "-1";
+        return factionId
+
 class ExpMetaData:
     experienceTypes = {
         "AllRepairs" : [],

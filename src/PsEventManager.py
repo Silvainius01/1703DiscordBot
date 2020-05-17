@@ -4,6 +4,7 @@ import time
 import tkinter
 import os
 import datetime
+import hashlib
 
 from collections import namedtuple
 from DataFetcher import *
@@ -29,6 +30,8 @@ def saveDataToDiskAppend(data:str, filePath:str, fileName:str):
     return
 
 class EventManagerPS2:
+    instance = None
+
     def __init__(self):
         self.eventTypeDict = {
         "ContinentLock": [],
@@ -44,16 +47,20 @@ class EventManagerPS2:
             "in" : []
         }
 
-        basePath = os.path.dirname(os.path.abspath(__file__))
+        self.eventHashes = { }
+
+        basePath = "{0}\\testdata".format(os.path.dirname(os.path.abspath(__file__)))
         timestr = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         self.tracker = TrackerBase()
         self.writeEnabled = True
+        self.writeLogEnabled = True
         self.writeToDiskInterval = 50
         self.eventSinceWrite = self.writeToDiskInterval
         self.writePath = "{0}\\tracker_sessions".format(basePath)
         self.sessionFileName = "session_{0}.json".format(timestr)
         self.eventLogName = "session_{0}_eventlog.txt".format(timestr)
+        EventManagerPS2.instance = self
         return
 
     def SetTracker(self, tracker:TrackerBase):
@@ -70,7 +77,17 @@ class EventManagerPS2:
         if eventPayload == None or self.FilterEvent(eventPayload):
             return
 
-        saveDataToDiskAppend(eventPayload, self.writePath, self.eventLogName)
+        # Protection against duplicate events
+        hash = EventManagerPS2.__GenerateEventHash__(eventPayload)
+        try: 
+            if self.eventHashes[hash]:
+                return
+        except KeyError:
+            self.eventHashes[hash] = True
+
+        if self.writeLogEnabled:
+            saveDataToDiskAppend(eventPayload, self.writePath, self.eventLogName)
+
         if self.tracker.ProcessEvent(eventPayload):
             if self.writeEnabled:
                 if self.eventSinceWrite > self.writeToDiskInterval:
@@ -124,6 +141,14 @@ class EventManagerPS2:
         else: self.filters["ex"].append(ExclusiveExperienceIdFilter(id))
         return
 
+    def __GenerateEventHash__(event):
+        eventName = event["event_name"]
+        timestamp = event["timestamp"]
+        world_id = event.get("world_id")
+        zone_id = event.get("zone_id")
+        charId = event.get("character_id")
+        attackerId = event.get("attacker_character_id")
+        return "{0}{1}{2}{3}{4}{5}".format(eventName, timestamp, world_id, zone_id, charId, attackerId)
 
 
 if __name__ == "__main__":
