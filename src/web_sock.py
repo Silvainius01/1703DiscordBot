@@ -1,7 +1,7 @@
-import asyncio
 import os
 import websockets
 import datetime
+import time
 
 saveDirectory = os.path.dirname(os.path.abspath(__file__)) + "\\testdata"
 saveDirectoryWebsocket = saveDirectory + "\\websocket"
@@ -14,31 +14,34 @@ def saveDataToDiskAppend(data:str, filePath:str, fileName:str):
 	dump_file.close()
 	return
 
-class PS2_WebSocket_Listener:
-	def __init__(self, callbacks:list = []):
+def StartLoop(loop):
+	asyncio.set_event_loop(loop)
+	loop.run_forever()
+	return
+
+class PsEventGatherer:
+	def __init__(self):
 		self.uri = "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:17034223270"
-		self.callbacks = callbacks
+		self.callbacks = []
 		self.charIds = []
 		self.eventNames = []
 		self.worlds = []
 		self.maxRetry = 3
+		self.eventBuffers = { }
+		self.currBuffer = 0
 
 	def addCallback(self, callback):
 		self.callbacks.append(callback)
-
-	def startListener(self):
-		asyncio.get_event_loop().run_until_complete(self.socketConnect())
-		print("after")
 		return
 
 	def setCharIds(self, charIds:list):
-		self.charIds = charIds if charIds != None and (charIds is list) else []
+		self.charIds = charIds if charIds != None and (isinstance(charIds,list)) else []
 		return
 	def setEventNames(self, events:list):
-		self.eventNames = events if events != None and (events is list) else []
+		self.eventNames = events if events != None and (isinstance(events,list)) else []
 		return
 	def setWorlds(self, worlds:list):
-		self.worlds = worlds if worlds != None and (worlds is list) else []
+		self.worlds = worlds if worlds != None and (isinstance(worlds,list)) else []
 		return
 
 	def __charArg__(self):
@@ -63,16 +66,18 @@ class PS2_WebSocket_Listener:
 		return '"eventNames":["all"]'
 	
 	def __worldArg__(self):
+		arg = '"worlds":["all"]'
 		if self.worlds != None and self.worlds.__len__() > 0:
 			worldList = []
 			for id in self.worlds:
 				worldList.append('"{0}"'.format(id))
 			worldList = ",".join(worldList)
-			return '"worlds":[{0}]'.format(worldList)
-		return '"worlds":["all"]'
+			arg = '"worlds":[{0}]'.format(worldList)
+		return '{0},"logicalAndCharactersWithWorlds":true'.format(arg)
 
 	async def socketConnect(self):
 		i = 0
+		currBuffer = 0
 		print("Establishing connections...")
 		while i < self.maxRetry:
 			try:
@@ -81,13 +86,13 @@ class PS2_WebSocket_Listener:
 					print("Connected.")
 					msg  = '{{"service":"event","action":"subscribe",{0},{1},{2} }}'.format(self.__charArg__(), self.__eventArg__(), self.__worldArg__())
 			
-					await websocket.send('{"service":"event","action":"clearSubscribe","all":"true"}')
 					await websocket.send(msg)
 
-					while True:
+					receivePackets = True
+					while receivePackets:
 						payload = await websocket.recv()
-						for callback in self.callbacks:
-							callback(payload=payload)
+						self.SendPayloadToBuffer(payload)
+					await websocket.send('{"service":"event","action":"clearSubscribe","all":"true"}')
 			except websockets.exceptions.ConnectionClosedError as exc:
 				saveDataToDiskAppend(exc, saveDirectoryWebsocket, "log.txt")
 				print("Connection Failed. Retrying ({0}/{1})...".format(i+1, self.maxRetry))
@@ -97,8 +102,42 @@ class PS2_WebSocket_Listener:
 			i += 1
 		return
 
+	def RunEventLog(self, file):
+		for line in file.readlines():
+			payload = "{{ \"payload\": {0} }}".format(line.strip())
+			self.SendPayloadToBuffer(payload)
+		return
+
+	def SendPayloadToBuffer(self, payload):
+		bufferId = self.currBuffer
+		self.eventBuffers[bufferId].append(payload)
+		self.currBuffer = (bufferId+1)%len(self.eventBuffers)
+		return
+
+	def ProcessBuffer(self):
+		bufferId = len(self.eventBuffers)
+		if self.eventBuffers.get(bufferId) == None:
+			self.eventBuffers[bufferId] = []
+		while True:
+			if len(self.eventBuffers[bufferId]) > 0:
+				payload = self.eventBuffers[bufferId].pop(0)
+				for callback in self.callbacks:
+					callback(rawResponse=payload)
+			else: time.sleep(1)
+		return
+
+	def MonitorBuffers(self, threadStartFunc):
+		eventCount = 0
+		for buffer in self.eventBuffers:
+			eventCount += len(buffer)
+		eventCount // 1000
+		for i in range(1000, eventCount, 1000):
+			threadStartFunc()
+		time.sleep(60)
+
+
 if __name__ == "__main__":
 	uri = "wss://push.planetside2.com/streaming?environment=ps2&service-id=s:17034223270"
-	websocket_listener = PS2_WebSocket_Listener(uri)
+	websocket_listener = PsEventGatherer(uri)
 	asyncio.get_event_loop().run_until_complete(websocket_listener.socketConnect())
 	

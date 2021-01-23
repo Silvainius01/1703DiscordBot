@@ -1,0 +1,110 @@
+[
+  {
+    "tag": "SKL",
+    "name": "SoKaars Legion",
+    "kills": 9044,
+    "deaths": 10617,
+    "revives": 2143,
+    "airkills": 188,
+    "sundykills": 187,
+    "vehiclekills": 427,
+    "cortiumharvest": 1496,
+    "repair": 13692
+  },
+  {
+    "tag": "VCO",
+    "name": "Voodoo Company",
+    "kills": 2855,
+    "deaths": 3257,
+    "revives": 615,
+    "airkills": 43,
+    "sundykills": 62,
+    "vehiclekills": 160,
+    "cortiumharvest": 489,
+    "repair": 3572
+  },
+  {
+    "tag": "AODR",
+    "name": "Angels of Death TR",
+    "kills": 4798,
+    "deaths": 5820,
+    "revives": 1193,
+    "airkills": 66,
+    "sundykills": 73,
+    "vehiclekills": 241,
+    "cortiumharvest": 543,
+    "repair": 5982
+  },
+  {
+    "tag": "PRAE",
+    "name": "Praetorians VS",
+    "kills": 521,
+    "deaths": 532,
+    "revives": 10,
+    "airkills": 3,
+    "sundykills": 6,
+    "vehiclekills": 15,
+    "cortiumharvest": 74,
+    "repair": 179
+  },
+  {
+    "tag": "8SEC",
+    "name": "Eight Seconds",
+    "kills": 1452,
+    "deaths": 1116,
+    "revives": 337,
+    "airkills": 1,
+    "sundykills": 4,
+    "vehiclekills": 5,
+    "cortiumharvest": 0,
+    "repair": 369
+  },
+  {
+    "tag": "1TMI",
+    "name": "1st Terran Mobile Infantry",
+    "kills": 958,
+    "deaths": 1146,
+    "revives": 210,
+    "airkills": 11,
+    "sundykills": 22,
+    "vehiclekills": 45,
+    "cortiumharvest": 28,
+    "repair": 1360
+  },
+  {
+    "tag": "VKTZ",
+    "name": "Vanu Sovereign KatZ",
+    "kills": 818,
+    "deaths": 734,
+    "revives": 49,
+    "airkills": 17,
+    "sundykills": 40,
+    "vehiclekills": 51,
+    "cortiumharvest": 154,
+    "repair": 1572
+  },
+  {
+    "tag": "KN1",
+    "name": "Kneel No One",
+    "kills": 693,
+    "deaths": 374,
+    "revives": 57,
+    "airkills": 2,
+    "sundykills": 8,
+    "vehiclekills": 8,
+    "cortiumharvest": 80,
+    "repair": 105
+  },
+  {
+    "tag": "2RAF",
+    "name": "2nd Republic Assault Force",
+    "kills": 3866,
+    "deaths": 5652,
+    "revives": 1068,
+    "airkills": 47,
+    "sundykills": 52,
+    "vehiclekills": 163,
+    "cortiumharvest": 504,
+    "repair": 3734
+  }
+]

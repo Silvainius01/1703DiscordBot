@@ -3,7 +3,7 @@ import requests
 import json
 import os
 
-saveDirectory = os.path.dirname(os.path.abspath(__file__)) + "\\testdata"
+saveDirectory = os.path.dirname(os.path.abspath(__file__)) + "\\..\\testdata"
 saveDirectoryOutfit = saveDirectory + "\\outfit"
 saveDirectoryPlayer = saveDirectory + "\\player"
 saveDirectoryDyZone = saveDirectory + "\\DynamicZone"
@@ -24,33 +24,43 @@ def CharacterNameOrIdUrl(nameOrId:str, ext:str):
         return "{0}/character/?character_id={1}{2}".format(baseRequestUrl, nameOrId, ext)
     except ValueError:
         return "{0}/character/?name.first={1}{2}".format(baseRequestUrl, nameOrId, ext)
+    return
+
+def ListToUrlArray(valueList):
+    if valueList == None or not isinstance(valueList, list) or len(valueList) == 0:
+        return ""
+    strList = []
+    for v in valueList:
+        if isinstance(v, str):
+            strList.append(v)
+        else: strList.append(str(v))
+    return ",".join(strList)
+def ChunkList(lst, chunkSize):
+    for i in range(0, len(lst), chunkSize):
+        yield lst[i:i + chunkSize]
 
 class DataFetcher:
     def fetchOutfitData(outfitTag:str, saveToDisk:bool):
-        url = "{0}/outfit?alias={1}&c:resolve=member_character_name&c:resolve=member_online_status".format(baseRequestUrl, outfitTag)
-        response = requests.get(url)
-        try:
-            if(response.status_code == 200):
-                response_text = response.text
-                outfitData = json.loads(response_text)
-                if(saveToDisk):
-                    saveDataToDisk(outfitData, saveDirectoryOutfit, outfitTag+".json")
-                return {"status": True, "outfitData": outfitData.get("outfit_list")[0] }
-            else:
-                raise Exception("Bad status code from request!")
-        except Exception as exc:
-            return {"status": False, "print": True, "exception": exc}
-        return {"status":False}
+        return DataFetcher.__fetchOutfit__("alias={0}".format(outfitTag), False, saveToDisk)
+    def fetchOutfitIds(outfitIds):
+        return DataFetcher.__fetchOutfit__("alias={0}".format(ListToUrlArray(outfitIds)), True, False)
     def fetchOutfitNameData(outfitName:str, saveToDisk:bool):
-        url = "{0}/outfit?name={1}&c:resolve=member_character_name&c:resolve=member_online_status".format(baseRequestUrl, outfitName)
+        return DataFetcher.__fetchOutfit__("name={0}".format(outfitName), False, saveToDisk)
+    def fetchOutfitIdData(outfitId, saveToDisk:bool):
+        return DataFetcher.__fetchOutfit__("outfit_id={0}".format(outfitId), False, saveToDisk)
+    def __fetchOutfit__(urlAug, returnList:bool, saveToDisk:bool):
+        url = "{0}/outfit?{1}&c:resolve=member_character_name&c:resolve=member_online_status".format(baseRequestUrl, urlAug)
         response = requests.get(url)
         try:
             if(response.status_code == 200):
                 response_text = response.text
-                outfitData = json.loads(response_text)
+                outfitData = json.loads(response_text).get("outfit_list")
                 if(saveToDisk):
-                    saveDataToDisk(outfitData, saveDirectoryOutfit, outfitName+".json")
-                return {"status": True, "outfitData": outfitData.get("outfit_list")[0] }
+                    outfit = outfitData[0]
+                    saveDataToDisk(outfitData, saveDirectoryOutfit, "{0}_{1}.json".format(outfit["alias"], outfit["name"]))
+                if not returnList:
+                    return {"status": True, "outfitData": outfitData[0] }
+                return {"status": True, "outfit_list": outfitData }
             else:
                 raise Exception("Bad status code from request!")
         except Exception as exc:
@@ -72,23 +82,28 @@ class DataFetcher:
             print(response.get("exception"))
         return response
             
-    def fetchCharacterId(characterId:str, saveToDisk:bool):
-        url = "{0}/character/?character_id={1}&c:resolve=outfit".format(baseRequestUrl, characterId)
-        return DataFetcher.__fetchCharacter__(url, saveToDisk)
-    def fetchCharacterName(characterName:str, saveToDisk:bool):
-        url = "{0}/character/?name.first={1}&c:resolve=outfit".format(baseRequestUrl, characterName)
-        return DataFetcher.__fetchCharacter__(url, saveToDisk)
-    def __fetchCharacter__(url, saveToDisk:bool):
-        response = requests.get(url)
+    def fetchCharacterId(charId:str, saveToDisk:bool):
+        return DataFetcher.__fetchCharacter__("character_id={0}".format(charId), False, saveToDisk)
+    def fetchCharacterName(charName:str, saveToDisk:bool):
+        return DataFetcher.__fetchCharacter__("name.first={0}".format(charName), False, saveToDisk)
+    def fetchCharacterIds(charIdList):
+        urlAug = "character_id={0}".format(ListToUrlArray(charIdList))
+        return DataFetcher.__fetchCharacter__(urlAug, True, False)
+    def __fetchCharacter__(urlAug, returnList, saveToDisk:bool):
+        url = "{0}/character/?{1}&c:resolve=outfit".format(baseRequestUrl, urlAug)
         try:
+            response = requests.get(url)
             if(response.status_code == 200):
                 response_text = response.text
-                charData = json.loads(response_text).get("character_list")[0]
+                charData = json.loads(response_text).get("character_list")
                 if(saveToDisk):
-                    charId = charData.get("character_id")
-                    charName = charData.get("name").get("first")
-                    saveDataToDisk(charData, saveDirectoryPlayer, "{0}_{1}.json".format(charName, charId))
-                return {"status": True, "charData": charData }
+                    charDataT = charData[0]
+                    charId = charDataT.get("character_id")
+                    charName = charDataT.get("name").get("first")
+                    saveDataToDisk(charDataT, saveDirectoryPlayer, "{0}_{1}.json".format(charName, charId))
+                if not returnList:
+                    return {"status": True, "charData": charData[0] }
+                return {"status": True, "character_list": charData }
             else:
                 raise Exception("Bad status code from request!")
         except Exception as exc:
@@ -171,41 +186,156 @@ class DataFetcher:
 
 class OutfitMetaData:
     outfits = {}
-    outfitNames = {}
-    outfitFactionMap = {}
+    outfitTagToId = {}
+    outfitNameToId = {}
 
-    def GetOutfitDataId(id):
+    def GetOutfit(id):
+        try:
+            return OutfitMetaData.outfits[id]
+        except KeyError:
+            data = DataFetcher.fetchOutfitIdData(id, False)
+            if data["status"]:
+                return OutfitMetaData.__RegisterOutfit__(data["outfitData"])
+        print("Failed to get data for outfit {0}".format(id))
+        return {}
+    def GetOutfitFromTag(tag:str):
+        try:
+            id = OutfitMetaData.outfitTagToId[tag]
+            return OutfitMetaData.outfits[id]
+        except KeyError:
+            data = DataFetcher.fetchOutfitData(tag, False)
+            if data["status"]:
+                return OutfitMetaData.__RegisterOutfit__(data["outfitData"])
+        print("Failed to get data for outfit {0}".format(tag))
+        return {}
+    def GetOutfitFromName(name:str):
+        try:
+            id = OutfitMetaData.outfitNameToId[name]
+            return OutfitMetaData.outfits[id]
+        except KeyError:
+            data = DataFetcher.fetchOutfitNameData(name, False)
+            if data["status"]:
+                return OutfitMetaData.__RegisterOutfit__(data["outfitData"])
+        print("Failed to get data for outfit {0}".format(name))
+        return {}
 
-        return
-    def GetOutfitDataTag(tag:str):
-        data = DataFetcher.fetchOutfitData(tag, True)
-        if data["status"]:
-            outfitData = data.get("outfitData")
+    def GatherOutfits(ids):
+        """
+            Gathers a set of outfits from the API and stores them. Returns a True on success and False on failure
+        """
+        result = True
+        for idList in ChunkList(ids, 100):
+            if not OutfitMetaData.__GatherOutfitTags__(idList):
+                result = False
+        return result
+    def __GatherOutfits__(ids):
+        outfitList = DataFetcher.fetchOutfitIds(ids)
+        if not outfitList["status"]:
+            return False
+        outfitList = outfitList["outfit_list"]
+        for outfitData in outfitList:
             outfitId = outfitData.get("outfit_id")
-            outfitName = outfitData.get("name")
+            OutfitMetaData.__RegisterOutfit__(outfitId, outfitData)
+        return True
 
-            outfits[outfitId] = outfitData
-            outfitNames[outfitName] = outfitId
+    def GetOutfitFaction(id):
+        return OutfitMetaData.GetOutfit(id).get("faction_id", "-1")
 
-            return outfitData.get("outfitData")
-        return
+    def __RegisterOutfit__(outfitData):
+        outfitId = outfitData.get("outfit_id")
+        outfitName = outfitData.get("name")
+        outfitTag = outfitData.get("alias")
 
-    def GetOutfitIdFaction(id):
-        return
+        OutfitMetaData.outfits[outfitId] = outfitData
+        OutfitMetaData.outfitTagToId[outfitTag] = outfitId
+        OutfitMetaData.outfitNameToId[outfitName] = outfitId
+
+        outfitLeader = outfitData.get("leader_character_id")
+        outfitFaction = CharacterMetaData.GetCharFaction(outfitLeader)
+        OutfitMetaData.outfits[outfitId]["faction_id"] = outfitFaction
+        return outfitData
 
 class CharacterMetaData:
-    charFactionMap = {}
+    charDataDict = {}
+    charNameToId = {}
+    invalidChars = { "0" : "-1" }
 
-    def GetCharIdFaction(id):
-        factionId = CharacterMetaData.charFactionMap.get(id)
-        if factionId == None:
-            # Register character faction if not found
-            factionId = DataFetcher.fetchCharacterIdFaction(id)
-            if factionId.get("status"):
-                factionId = factionId.get("faction_id")
-                CharacterMetaData.charFactionMap[id] = factionId
-            return "-1";
-        return factionId
+    def GetChar(id):
+        """
+            Get a character's data from API via id.
+        """
+        try:
+            if not CharacterMetaData.invalidChars.get(id):
+                return CharacterMetaData.charDataDict[id]
+            return {}
+        except KeyError:
+            charData = DataFetcher.fetchCharacterId(id, False)
+            if charData["status"]:
+                return CharacterMetaData.__RegisterCharacter__(id, charData["charData"])
+        print("Failed to fetch data for character {0}".format(id))
+        return {}
+    def GetCharFromName(name):
+        try:
+            id = CharacterMetaData.charNameToId[name]
+            return CharacterMetaData.charDataDict[id]
+        except KeyError:
+            charData = DataFetcher.fetchCharacterName(name, False)
+            if charData["status"]:
+                id  = charData["charData"]["character_id"]
+                return CharacterMetaData.__RegisterCharacter__(id, charData["charData"])
+        print("Failed to fetch data for character {0}".format(name))
+        return {}
+
+    def GetChars(idList):
+        """
+        Returns a list character data. It will be in the same order as the input IDs.
+        Invalid charIds will have empty dictionaries in their place.
+        """
+        if not CharacterMetaData.GatherChars(idList):
+            print("Could not gather data on desired characters!")
+            return []
+        charList = []
+        for id in idList:
+            charList.append(charDataDict.get(id, {}))
+        return charList
+
+    def GatherChars(ids:list):
+        """
+            Gathers a set of ids from the API and stores them. Returns a True on success and False on failure
+        """
+        result = True
+        for idList in ChunkList(ids, 100):
+            if not CharacterMetaData.__GatherCharsInternal__(idList):
+                result = False
+        return result
+
+    def __GatherCharsInternal__(ids:list):
+        charList = DataFetcher.fetchCharacterIds(ids)
+        if not charList["status"]:
+            return False
+        charList = charList["character_list"]
+        for charData in charList:
+            charId = charData.get("character_id")
+            CharacterMetaData.__RegisterCharacter__(charId, charData)
+        return True
+
+    def CharsOnSameTeam(char1Id, char2Id):
+        return CharacterMetaData.GetCharFaction(char1Id) == CharacterMetaData.GetCharFaction(char2Id)
+
+    def GetCharFaction(id):
+        return CharacterMetaData.GetChar(id).get("faction_id", "-1")
+    def GetCharFactionFromName(name):
+        return CharacterMetaData.GetCharFromName(name).get("faction_id", "-1")
+
+    def GetCharOutfitId(charId):
+        if charId == None:
+            return None
+        return CharacterMetaData.GetChar(charId).get("outfit", {}).get("outfit_id", None)
+
+    def __RegisterCharacter__(id, charData):
+        CharacterMetaData.charDataDict[id] = charData
+        CharacterMetaData.charNameToId[id] = charData["name"]["first"]
+        return charData
 
 class ExpMetaData:
     experienceTypes = {

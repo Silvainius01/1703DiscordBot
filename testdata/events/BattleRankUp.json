@@ -1,0 +1,12 @@
+{
+	"payload": {
+		"battle_rank": "97",
+		"character_id": "5428026242701784689",
+		"event_name": "BattleRankUp",
+		"timestamp": "1587011786",
+		"world_id": "1",
+		"zone_id": "8"
+	},
+	"service": "event",
+	"type": "serviceMessage"
+}

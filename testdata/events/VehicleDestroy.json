@@ -1,0 +1,19 @@
+{
+"payload":
+{
+	"attacker_character_id": "5428213558402592433",
+	"attacker_loadout_id":"12",
+	"attacker_vehicle_id":"9",
+	"attacker_weapon_id":"4900",
+	"character_id":"5428285306557107905",
+	"event_name":"VehicleDestroy",
+	"facility_id":"0",
+	"faction_id":"1",
+	"timestamp":"1587009223",
+	"vehicle_id":"7",
+	"world_id":"17",
+	"zone_id":"8"
+	},
+"service":"event",
+"type":"serviceMessage"
+}

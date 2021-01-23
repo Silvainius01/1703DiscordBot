@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{ee2c16a3-8338-47a3-8a11-44fc63eab7de}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>src\interface\MainConsole.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>Global|PythonCore|3.8-32</InterpreterId>
+    <TestFramework>Pytest</TestFramework>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
+    <Name>WhaleWatcher</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src\discordbot\Calender.py" />
+    <Compile Include="src\discordbot\ServerCommandRestrictions.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\trackers\OutfitWarsTracker.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\trackers\TrackerBase.py" />
+    <Compile Include="src\trackers\CharacterTracker.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\discordbot\CommandValidation.py" />
+    <Compile Include="src\EventFilter.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\trackers\OutfitTracker.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\interface\MainConsole.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\PsEventManager.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\DataFetcher.py" />
+    <Compile Include="src\web_sock.py" />
+    <Compile Include="src\discordbot\WhalerBot.py" />
+    <Compile Include="src\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="packages\" />
+    <Folder Include="src\" />
+    <Folder Include="src\discordbot\" />
+    <Folder Include="src\interface\" />
+    <Folder Include="src\trackers\" />
+    <Folder Include="testdata\" />
+    <Folder Include="testdata\events\" />
+    <Folder Include="testdata\outfit\" />
+    <Folder Include="testdata\player\" />
+    <Folder Include="testdata\tracker_sessions\" />
+    <Folder Include="testdata\websocket\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.8-32" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="testdata\events\AchievementEarned.json" />
+    <Content Include="testdata\events\BattleRankUp.json" />
+    <Content Include="testdata\events\Death.json" />
+    <Content Include="testdata\events\GainExperience.json" />
+    <Content Include="testdata\events\ItemAdded.json" />
+    <Content Include="testdata\events\MetaGame.json" />
+    <Content Include="testdata\events\PlayerFacilityCapture.json" />
+    <Content Include="testdata\events\PlayerFacilityDefend.json" />
+    <Content Include="testdata\events\PlayerLogin.json" />
+    <Content Include="testdata\events\PlayerLogout.json" />
+    <Content Include="testdata\events\SkillAdded.json" />
+    <Content Include="testdata\events\VehicleDestroy.json" />
+    <Content Include="testdata\ExpTypes.json" />
+    <Content Include="testdata\FacilityTypes.json" />
+    <Content Include="testdata\MetaGameStates.json" />
+    <Content Include="testdata\MetagameTypes.json" />
+    <Content Include="testdata\namespaces.json" />
+    <Content Include="testdata\outfit\1703.json" />
+    <Content Include="testdata\player\deThreeVS_5428985062301712145.json" />
+    <Content Include="testdata\player\InfiIze_5428885884726986193.json" />
+    <Content Include="testdata\player\Infilze_5428285306557107905.json" />
+    <Content Include="testdata\player\lnfiIze_5428739480389754065.json" />
+    <Content Include="testdata\player\lnfilze_5428739480389750513.json" />
+    <Content Include="testdata\player\ZangiefNC_5428530264747825713.json" />
+    <Content Include="testdata\tracker_sessions\miller_ow_fixed.txt" />
+    <Content Include="testdata\VehicleTypes.json" />
+    <Content Include="testdata\websocket\log.txt" />
+    <Content Include="testdata\Zones.json" />
+    <Content Include="testdata\_.json" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>

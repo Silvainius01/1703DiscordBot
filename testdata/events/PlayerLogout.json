@@ -1,0 +1,11 @@
+{
+"payload":
+	{
+	"character_id":"5428985062307183697",
+	"event_name":"PlayerLogout",
+	"timestamp":"1587012189",
+	"world_id":"17"
+	},
+"service":"event",
+"type":"serviceMessage"
+}

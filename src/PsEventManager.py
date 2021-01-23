@@ -6,28 +6,36 @@ import os
 import datetime
 import hashlib
 
+from enum import IntEnum
 from collections import namedtuple
-from DataFetcher import *
-from web_sock import *
-from EventFilter import *
-from TrackerBase import *
+from src.DataFetcher import *
+from src.web_sock import *
+from src.EventFilter import *
+
+from src.trackers.TrackerBase import TrackerBase
 
 def saveDataToDisk(data, filePath:str, fileName:str):
+    path = "{0}\\{1}".format(filePath, fileName)
     if not os.path.exists(filePath):
         os.makedirs(filePath)
     response_serialized = json.dumps(data)
-    dump_file = open("{0}\\{1}".format(filePath, fileName), "w")
+    dump_file = open(path, "w")
     dump_file.write(response_serialized)
     dump_file.close()
     return
 def saveDataToDiskAppend(data:str, filePath:str, fileName:str):
+    path = "{0}\\{1}".format(filePath, fileName)
     if not os.path.exists(filePath):
         os.makedirs(filePath)
     response_serialized = json.dumps(data)
-    dump_file = open("{0}\\{1}".format(filePath, fileName), "a")
+    dump_file = open(path, "a")
     dump_file.write("{0}\n".format(response_serialized))
     dump_file.close()
     return
+
+class EventProcessState(IntEnum):
+    Raw, PreHashFilter, PostHashFilter, Processed = range(4)
+    pass
 
 class EventManagerPS2:
     instance = None
@@ -49,17 +57,19 @@ class EventManagerPS2:
 
         self.eventHashes = { }
 
-        basePath = "{0}\\testdata".format(os.path.dirname(os.path.abspath(__file__)))
+        basePath = "{0}\\..\\testdata".format(os.path.dirname(os.path.abspath(__file__)))
         timestr = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         self.tracker = TrackerBase()
-        self.writeEnabled = True
-        self.writeLogEnabled = True
+        self.writeTrackerData = True
+        self.writeMetaData = True
+        self.eventLoggingMode = EventProcessState.Processed
         self.writeToDiskInterval = 50
         self.eventSinceWrite = self.writeToDiskInterval
-        self.writePath = "{0}\\tracker_sessions".format(basePath)
-        self.sessionFileName = "session_{0}.json".format(timestr)
-        self.eventLogName = "session_{0}_eventlog.txt".format(timestr)
+        self.writePath = "{0}\\tracker_sessions\\session_{1}".format(basePath,timestr)
+        self.trackerDataFileName = "trackerData.json"
+        self.eventLogName = "eventlog.txt"
+        self.metaDataFileName = "metadata.json"
         EventManagerPS2.instance = self
         return
 
@@ -67,38 +77,57 @@ class EventManagerPS2:
         self.tracker = tracker
         return
 
-    def ReceiveEvent(self, payload:str):
+    def ReceiveEvent(self, rawResponse:str):
         """
             Entry point for all events received from websocket.
         """
-        eventPayload = json.loads(payload).get("payload")
+        rawEvent = json.loads(rawResponse)
+        processState = self.TryProcessEvent(rawEvent)
+        if processState >= self.eventLoggingMode:
+            saveDataToDiskAppend(rawEvent, self.writePath, self.eventLogName)
+        return
+
+    def TryProcessEvent(self, rawEvent):
+        eventPayload = rawEvent.get("payload")
 
         # If no payload or event doesnt pass filters
         if eventPayload == None or self.FilterEvent(eventPayload):
-            return
+            return EventProcessState.Raw
 
         # Protection against duplicate events
         hash = EventManagerPS2.__GenerateEventHash__(eventPayload)
         try: 
             if self.eventHashes[hash]:
-                return
+                return EventProcessState.PreHashFilter
         except KeyError:
             self.eventHashes[hash] = True
 
-        if self.writeLogEnabled:
-            saveDataToDiskAppend(eventPayload, self.writePath, self.eventLogName)
+        #if self.eventLoggingMode:
+        #    saveDataToDiskAppend(eventPayload, self.writePath, self.eventLogName)
 
         if self.tracker.ProcessEvent(eventPayload):
-            if self.writeEnabled:
-                if self.eventSinceWrite > self.writeToDiskInterval:
+            eventState = "Processed"
+            if self.eventSinceWrite > self.writeToDiskInterval:
+                if self.writeTrackerData:
                     self.WriteTrackerData()
-                    self.eventSinceWrite = 0
-                self.eventSinceWrite += 1
-        return
+                if self.writeMetaData:
+                    self.WriteMetaData()
+                self.eventSinceWrite = 0
+            self.eventSinceWrite += 1
+            return EventProcessState.Processed
+        return EventProcessState.PostHashFilter
 
     def WriteTrackerData(self):
-        print("")
-        saveDataToDisk(self.tracker.GetTrackerData(), self.writePath, self.sessionFileName)
+        print("   Writing Tracker Data")
+        saveDataToDisk(self.tracker.GetTrackerData(), self.writePath, self.trackerDataFileName)
+        return
+
+    def WriteMetaData(self):
+        print("   Writing Meta Data")
+        saveDataToDisk(self.tracker.GetMetaData(), self.writePath, self.metaDataFileName)
+        return
+
+    def LogEvent(self, event, eventState):
         return
 
     def FilterEvent(self, event):
@@ -161,5 +190,5 @@ if __name__ == "__main__":
     manager.AddTargetCharacter("5428977504197397649", "TaterKnight")
 
     # init websocket
-    websocket_listener = PS2_WebSocket_Listener([manager.ReceiveEvent])
+    websocket_listener = PsEventGatherer([manager.ReceiveEvent])
     websocket_listener.startListener(list(manager.targetChars.keys()), ["AchievementEarned","BattleRankUp","Death","ItemAdded","SkillAdded","VehicleDestroy","GainExperience","PlayerFacilityCapture","PlayerFacilityDefend"])
